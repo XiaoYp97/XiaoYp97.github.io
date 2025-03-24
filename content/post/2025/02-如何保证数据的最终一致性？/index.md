@@ -2,7 +2,7 @@
 title: "如何保证数据的最终一致性？"
 description:
 date: "2025-03-21T17:25:41+08:00"
-slug: "02 如何保证数据的最终一致性？"
+slug: "final-consistency-of-data"
 image: ""
 license: false
 hidden: false
