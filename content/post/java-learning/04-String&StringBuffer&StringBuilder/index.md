@@ -1,5 +1,5 @@
 ---
-title: "String/StringBuffer/StringBuilder"
+title: "String & StringBuffer & StringBuilder"
 description:
 date: "2024-03-25T14:36:56+08:00"
 slug: "string-stringbuffer-stringbuilder"
@@ -12,18 +12,17 @@ tags: ["Java", "String", "StringBuffer", "StringBuilder"]
 categories: ["Java"]
 # weight: 1 # You can add weight to some posts to override the default sorting (date descending)
 ---
-
 ## 对比
 
-| 特性                | String                  | StringBuffer           | StringBuilder          |
-|---------------------|-------------------------|-------------------------|-------------------------|
-| **可变性**          | 不可变                  | 可变                    | 可变                    |
-| **线程安全**         | 是（天然不可变）         | 是（synchronized方法）  | 否                      |
-| **性能**            | 低（频繁创建对象）       | 中                      | 高                      |
-| **内存分配**         | 每次修改产生新对象       | 动态数组                | 动态数组                |
-| **初始化容量**       | 不可设置                | 默认16，可自定义         | 默认16，可自定义         |
-| **JDK版本**          | 1.0                     | 1.0                     | 1.5                     |
-| **使用场景**         | 常量字符串、配置信息      | 多线程环境字符串操作      | 单线程环境字符串操作      |
+| 特性                 | String               | StringBuffer           | StringBuilder        |
+| -------------------- | -------------------- | ---------------------- | -------------------- |
+| **可变性**     | 不可变               | 可变                   | 可变                 |
+| **线程安全**   | 是（天然不可变）     | 是（synchronized方法） | 否                   |
+| **性能**       | 低（频繁创建对象）   | 中                     | 高                   |
+| **内存分配**   | 每次修改产生新对象   | 动态数组               | 动态数组             |
+| **初始化容量** | 不可设置             | 默认16，可自定义       | 默认16，可自定义     |
+| **JDK版本**    | 1.0                  | 1.0                    | 1.5                  |
+| **使用场景**   | 常量字符串、配置信息 | 多线程环境字符串操作   | 单线程环境字符串操作 |
 
 ## 实现分析
 
@@ -153,6 +152,7 @@ private int newCapacity(int minCapacity) {
 ```
 
 1. **编码处理（coder字段）**：
+
    - `coder`取值0（LATIN1）或1（UTF16BE）
    - 位移操作实现字节与字符转换：
 
@@ -163,7 +163,6 @@ private int newCapacity(int minCapacity) {
      // 字符容量 → 字节长度
      int bytes = characters << coder;
      ```
-
 2. **扩容策略**：
 
    ```java
@@ -180,7 +179,6 @@ private int newCapacity(int minCapacity) {
    - 默认扩展量计算：`prefGrowth = oldLength + (2 << coder)`
      - LATIN1编码时：+2字节（即扩容2字符）
      - UTF16编码时：+4字节（即扩容2字符）
-
 3. **动态扩容流程**：
 
    ```text
@@ -190,8 +188,8 @@ private int newCapacity(int minCapacity) {
       ├─超过限制 → 抛出OOM
       └─创建新数组 → 数据复制
    ```
-
 4. **性能优化点**：
+
    - **延迟计算**：只在需要扩容时进行计算
    - **按需扩容**：根据实际增长需求动态调整
    - **位运算优化**：使用位移代替乘除运算
@@ -266,27 +264,28 @@ public class PerformanceTest {
 
 JDK17，Mac M1
 
-| 实现方式        | 耗时（ms）   | 内存分配（MB）   |
-|----------------|------------|----------------|
-| String         | 4236       | 218            |
-| StringBuffer   | 12         | 0.5            |
-| StringBuilder  | 8          | 0.3            |
+| 实现方式      | 耗时（ms） | 内存分配（MB） |
+| ------------- | ---------- | -------------- |
+| String        | 4236       | 218            |
+| StringBuffer  | 12         | 0.5            |
+| StringBuilder | 8          | 0.3            |
 
 ## 最佳实践
 
 ### 1. 选择策略
 
 - **优先使用String**：
+
   - 存储常量配置信息
   - 作为方法参数传递
   - 需要作为Map的Key使用时
-
 - **使用StringBuilder**：
+
   - 单线程环境下字符串拼接
   - SQL语句动态构建
   - 日志消息组装
-
 - **使用StringBuffer**：
+
   - 多线程共享的字符串操作
   - 全局日志缓冲区
   - 需要同步修改的共享资源
@@ -385,16 +384,17 @@ System.out.println(s1 == s3); // false（堆中新对象）
 ## 总结
 
 1. **基础原则**：
+
    - 优先考虑不可变性 → String
    - 单线程可变需求 → StringBuilder
    - 多线程可变需求 → StringBuffer
-
 2. **性能关键点**：
+
    - 避免不必要的字符串对象创建
    - 预估容量减少扩容次数
    - 警惕大字符串的内存驻留
-
 3. **发展趋势**：
+
    - Valhalla项目的值类型（inline class）可能带来新的字符串实现
    - GraalVM的字符串优化策略
    - Project Loom对字符串操作的影响
