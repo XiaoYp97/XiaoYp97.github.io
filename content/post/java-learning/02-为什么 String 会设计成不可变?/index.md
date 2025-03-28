@@ -85,7 +85,7 @@ categories: ["Java"]
 Java 通过以下机制保证 `String` 不可变：
 
 1. **类声明为 `final`**：禁止通过继承覆盖方法。
-2. **内部字符数组 `private final char[] value`**：外部无法直接访问或修改。
+2. **内部字符数组 `private final char[] value`**：外部无法直接访问或修改，且没有实现 `setter` 方法。
 3. **所有修改操作返回新对象**：如 `concat()`、`replace()` 等。
 
 ## 不可变性的核心优势
