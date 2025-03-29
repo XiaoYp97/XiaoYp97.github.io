@@ -12,7 +12,7 @@ tags: ["Java", "反射"]
 categories: ["Java", "反射"]
 # weight: 1 # You can add weight to some posts to override the default sorting (date descending)
 ---
-**反射（Reflection）** 是`Java`语言的一个特性，它允许程序在 **运行时(runtime)** 动态分析、检查和修改类、对象、方法、字段等的能力。它突破了传统代码的静态限制，允许程序在运行期间 **自省** 和 **动态操作**。
+**反射（Reflection）** 是`Java`语言的一个特性，它允许程序在 **运行时(runtime)** 动态分析、检查和修改类、对象、方法、字段等的能力。它突破了传统代码的静态限制，允许程序在运行期间 **自省（introspect）** 和 **动态操作**。
 
 **核心思想**: 将类的结构（方法、字段、构造函数等）映射为Java对象，通过API直接操作。
 
