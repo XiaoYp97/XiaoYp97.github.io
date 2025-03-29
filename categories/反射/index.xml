@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>反射 on XiaoYp - Blog</title><link>https://blog.selune.top/categories/%E5%8F%8D%E5%B0%84/</link><description>Recent content in 反射 on XiaoYp - Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>xyp_selune@163.com (Selune)</managingEditor><webMaster>xyp_selune@163.com (Selune)</webMaster><lastBuildDate>Tue, 26 Mar 2024 17:24:03 +0800</lastBuildDate><atom:link href="https://blog.selune.top/categories/%E5%8F%8D%E5%B0%84/index.xml" rel="self" type="application/rss+xml"/><item><title>反射？</title><link>https://blog.selune.top/p/java-reflection/</link><pubDate>Tue, 26 Mar 2024 17:24:03 +0800</pubDate><author>xyp_selune@163.com (Selune)</author><guid>https://blog.selune.top/p/java-reflection/</guid><description>&lt;p>&lt;strong>反射（Reflection）&lt;/strong> 是&lt;code>Java&lt;/code>语言的一个特性，它允许程序在 &lt;strong>运行时(runtime)&lt;/strong> 动态分析、检查和修改类、对象、方法、字段等的能力。它突破了传统代码的静态限制，允许程序在运行期间 &lt;strong>自省（introspect）&lt;/strong> 和 &lt;strong>动态操作&lt;/strong>。&lt;/p>
+&lt;p>&lt;strong>核心思想&lt;/strong>: 将类的结构（方法、字段、构造函数等）映射为Java对象，通过API直接操作。&lt;/p>
+&lt;p>&lt;strong>类对象是何时产生的？&lt;/strong>: 在类加载时产生的。在Java程序启动时，JVM会加载所需的类，并为每个类创建一个Class对象，这个对象包含了该类的所有结构信息，可以通过反射机制获取。&lt;/p>
+&lt;blockquote>
+&lt;p>反射机制是Java被视为&lt;code>动态语言&lt;/code>的关键特性之一。&lt;/p>&lt;/blockquote>
+&lt;p>&lt;img src="https://blog.selune.top/p/java-reflection/%E5%8F%8D%E5%B0%84%E6%B5%81%E7%A8%8B%E5%9B%BE.png"
+width="1488"
+height="790"
+srcset="https://blog.selune.top/p/java-reflection/%E5%8F%8D%E5%B0%84%E6%B5%81%E7%A8%8B%E5%9B%BE_hu_2b173f7bca4db030.png 480w, https://blog.selune.top/p/java-reflection/%E5%8F%8D%E5%B0%84%E6%B5%81%E7%A8%8B%E5%9B%BE_hu_6cabec9b3d6de7e.png 1024w"
+loading="lazy"
+alt="反射流程图"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="452px"
+>&lt;/p>
+&lt;h2 id="核心原理">核心原理
+&lt;/h2>&lt;p>Java反射的核心原理基于JVM的类加载机制和Java的类型系统:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>类加载机制&lt;/strong>: 当Java程序运行时，JVM会加载所需的类，并为每个类创建一个Class对象，这个对象包含了该类的所有结构信息。&lt;/li>
+&lt;li>&lt;strong>Class对象&lt;/strong>: 每个类在JVM中都有且只有一个对应的Class对象，这个对象是反射的入口点。&lt;/li>
+&lt;li>&lt;strong>运行时类型信息(RTTI)&lt;/strong>: Java在运行时保留了对象的类型信息，这使得反射成为可能。&lt;/li>
+&lt;/ul>
+&lt;h2 id="核心api">核心API
+&lt;/h2>&lt;p>Java反射的核心类位于 &lt;code>java.lang.reflect&lt;/code> 包中，关键API包括:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>类/接口&lt;/th>
+&lt;th>作用&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>java.lang.Class&lt;/code>&lt;/td>
+&lt;td>表示一个类或接口的特性，如名称、字段、方法等&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>java.lang.reflect.Field&lt;/code>&lt;/td>
+&lt;td>提供了类或接口的单个字段的信息和动态访问&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>java.lang.reflect.Method&lt;/code>&lt;/td>
+&lt;td>提供了类或接口上单个方法的信息和访问权限&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>java.lang.reflect.Constructor&lt;/code>&lt;/td>
+&lt;td>提供了类的单个构造函数的信息和访问权限&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>java.lang.reflect.Array&lt;/code>&lt;/td>
+&lt;td>提供了动态创建和访问 Java 数组的静态方法&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>java.lang.reflect.Modifier&lt;/code>&lt;/td>
+&lt;td>提供了静态方法和常量，用于解码类和成员访问修改器&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="典型场景">典型场景
+&lt;/h2>&lt;ol>
+&lt;li>&lt;strong>框架开发&lt;/strong>
+&lt;ul>
+&lt;li>Spring的依赖注入（IoC）、MyBatis的ORM映射。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>动态代理&lt;/strong>
+&lt;ul>
+&lt;li>结合&lt;code>InvocationHandler&lt;/code>实现AOP（如日志、事务）。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>序列化与反序列化&lt;/strong>
+&lt;ul>
+&lt;li>如Jackson/GSON通过反射读取字段生成JSON。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>IDE和调试工具&lt;/strong>
+&lt;ul>
+&lt;li>代码自动提示、对象属性查看。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>测试框架&lt;/strong>
+&lt;ul>
+&lt;li>JUnit通过反射调用测试方法。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="核心操作步骤">核心操作步骤
+&lt;/h2>&lt;h3 id="获取类的class对象">获取类的&lt;code>Class&lt;/code>对象
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 方式1: 通过类名.class&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 方式2: 通过对象.getClass()&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">str&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;Hello&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">str&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getClass&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 方式3: 通过Class.forName()（最常用）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">forName&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;java.lang.String&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 方式4: 调用类的加载器&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">ClassLoader&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">cl&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">this&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getClass&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">getClassLoader&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">cl&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">loadClass&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;java.lang.String&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="操作构造函数-动态创建对象">操作构造函数: 动态创建对象
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 获取无参构造器并创建对象&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Constructor&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">constructor&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getConstructor&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">instance&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">constructor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newInstance&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 获取有参构造器（例如: String的byte[]构造器）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Constructor&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">constructor&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getConstructor&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">byte&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">instance&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">constructor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newInstance&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">byte&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="n">65&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">66&lt;/span>&lt;span class="p">});&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="getxxx-和-getdeclaredxxx-的区别">getXXX() 和 getDeclaredXXX() 的区别
+&lt;/h4>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>方法&lt;/th>
+&lt;th>访问范围&lt;/th>
+&lt;th>是否包含私有成员&lt;/th>
+&lt;th>是否包含继承成员&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;strong>&lt;code>getXXX()&lt;/code>&lt;/strong>&lt;/td>
+&lt;td>仅返回 &lt;strong>public&lt;/strong> 成员&lt;/td>
+&lt;td>❌ 不包含&lt;/td>
+&lt;td>✅ 包含父类的 &lt;code>public&lt;/code> 成员&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>&lt;code>getDeclaredXXX()&lt;/code>&lt;/strong>&lt;/td>
+&lt;td>返回 &lt;strong>所有权限&lt;/strong> 的成员（public/protected/private/default）&lt;/td>
+&lt;td>✅ 包含&lt;/td>
+&lt;td>❌ 仅限当前类&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h4 id="getxxx-和-getdeclaredxxx-的使用场景对比">getXXX() 和 getDeclaredXXX() 的使用场景对比
+&lt;/h4>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;strong>场景&lt;/strong>&lt;/th>
+&lt;th>&lt;strong>推荐方法&lt;/strong>&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>获取公共 API（如框架调用）&lt;/td>
+&lt;td>&lt;code>getXXX()&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>访问私有成员（如测试、破解单例）&lt;/td>
+&lt;td>&lt;code>getDeclaredXXX()&lt;/code> + &lt;code>setAccessible(true)&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>需要继承的成员&lt;/td>
+&lt;td>&lt;code>getXXX()&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>仅操作当前类成员&lt;/td>
+&lt;td>&lt;code>getDeclaredXXX()&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h4 id="注意事项">注意事项
+&lt;/h4>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>继承关系&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>getXXX()&lt;/code> 会查找父类的 &lt;code>public&lt;/code> 成员。&lt;/li>
+&lt;li>&lt;code>getDeclaredXXX()&lt;/code> 仅限当前类，不检查父类。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>访问私有成员&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>通过 &lt;code>getDeclaredXXX()&lt;/code> 获取私有成员后，需调用 &lt;code>setAccessible(true)&lt;/code> 解除访问限制。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>性能影响&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>反射操作比直接调用慢，必要时可缓存 &lt;code>Method&lt;/code>/&lt;code>Field&lt;/code> 对象。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>模块化系统（Java 9+）&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>如果类在模块中，需在 &lt;code>module-info.java&lt;/code> 中开放权限（&lt;code>opens&lt;/code>）才能反射访问非 &lt;code>public&lt;/code> 成员。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://blog.selune.top/p/java-reflection/java.lang.reflect.Member.png"
+width="1476"
+height="820"
+srcset="https://blog.selune.top/p/java-reflection/java.lang.reflect.Member_hu_d810bcc6b7d95a72.png 480w, https://blog.selune.top/p/java-reflection/java.lang.reflect.Member_hu_8228d7ae83c859c3.png 1024w"
+loading="lazy"
+alt="java.lang.reflect.Member"
+class="gallery-image"
+data-flex-grow="180"
+data-flex-basis="432px"
+>&lt;/p>
+&lt;h3 id="操作方法-动态调用">操作方法: 动态调用
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 获取方法（例如: String的substring方法）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Method&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getMethod&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;substring&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 调用方法（对某个实例执行）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">invoke&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Reflection&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">2&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">5&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// 输出 &amp;#34;fle&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="methodinvoke-的返回值规则">&lt;code>Method.invoke()&lt;/code> 的返回值规则
+&lt;/h4>&lt;p>&lt;code>result&lt;/code> 的可能情况：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>被调用方法的返回类型&lt;/th>
+&lt;th>&lt;code>invoke()&lt;/code> 返回的 &lt;code>result&lt;/code> 类型&lt;/th>
+&lt;th>示例&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;strong>有返回值的方法&lt;/strong>&lt;/td>
+&lt;td>返回 &lt;code>Object&lt;/code>（实际为方法返回值）&lt;/td>
+&lt;td>&lt;code>String.substring()&lt;/code> → &lt;code>String&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>返回 &lt;code>void&lt;/code> 的方法&lt;/strong>&lt;/td>
+&lt;td>返回 &lt;code>null&lt;/code>&lt;/td>
+&lt;td>&lt;code>List.clear()&lt;/code> → &lt;code>null&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>基本类型（如 &lt;code>int&lt;/code>）&lt;/strong>&lt;/td>
+&lt;td>自动装箱为包装类（如 &lt;code>Integer&lt;/code>）&lt;/td>
+&lt;td>&lt;code>String.length()&lt;/code> → &lt;code>Integer&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>静态方法&lt;/strong>&lt;/td>
+&lt;td>正常返回（&lt;code>obj&lt;/code> 参数传 &lt;code>null&lt;/code>）&lt;/td>
+&lt;td>&lt;code>Math.max()&lt;/code> → &lt;code>Integer&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>方法抛出异常&lt;/strong>&lt;/td>
+&lt;td>封装成 &lt;code>InvocationTargetException&lt;/code>&lt;/td>
+&lt;td>-&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h4 id="为什么返回-object-而不是具体类型">为什么返回 &lt;code>Object&lt;/code> 而不是具体类型？
+&lt;/h4>&lt;ul>
+&lt;li>&lt;strong>反射的通用性&lt;/strong>：&lt;code>Method.invoke()&lt;/code> 需要适配任意方法签名，&lt;code>Object&lt;/code> 是所有类型的超类。&lt;/li>
+&lt;li>&lt;strong>类型安全&lt;/strong>：由开发者自行处理强制转型（编译器无法检查反射调用的返回类型）。&lt;/li>
+&lt;/ul>
+&lt;h3 id="操作字段-动态读写属性">操作字段: 动态读写属性
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 获取字段（例如: Integer的MAX_VALUE）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Field&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Integer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getDeclaredField&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;MAX_VALUE&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 读取字段值（静态字段可传null）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">max&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kc">null&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// 输出2147483647&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 修改字段值（需注意final字段可能抛出异常）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">setAccessible&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// 突破private限制（慎用！）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">set&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">100&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// 危险操作！可能破坏程序逻辑。&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="优缺点">优缺点
+&lt;/h2>&lt;h3 id="优点">优点
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>动态性&lt;/strong>: 允许在运行时动态地获取和操作类的信息，而不需要在编译时知道类的具体细节&lt;/li>
+&lt;li>&lt;strong>灵活性&lt;/strong>: 可以通过类名字符串来创建对象实例，可以在运行时动态调用方法和字段，以及访问和修改私有成员&lt;/li>
+&lt;li>&lt;strong>扩展性&lt;/strong>: 可以用于实现一些高级功能，如动态代理、注解处理、依赖注入等&lt;/li>
+&lt;/ul>
+&lt;h3 id="缺点">缺点
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>性能开销&lt;/strong>: 反射操作通常比直接调用慢，因为它需要在运行时获取和操作类的信息，需要额外的处理开销&lt;/li>
+&lt;li>&lt;strong>安全问题&lt;/strong>: 反射可以访问和修改私有成员，这可能导致安全隐患和程序逻辑错误&lt;/li>
+&lt;li>&lt;strong>复杂性&lt;/strong>: 使用反射可能会使代码变得复杂和难以理解，增加了维护成本&lt;/li>
+&lt;/ul></description></item></channel></rss>
