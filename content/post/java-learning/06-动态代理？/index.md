@@ -20,19 +20,19 @@ categories: ["Java", "反射", "代理模式"]
 
 ### 静态代理
 
-- **定义**: 在编译时，代理类已经存在，代理对象和被代理对象之间是一对一的关系。
-- **实现方式**: 手动创建代理类，实现与被代理类相同的接口，在代理类中持有被代理类的实例，通过调用被代理类的方法来实现代理功能。
-- **优点**: 代码简单，易于理解。
-- **缺点**: 每增加一个被代理类，都需要创建一个对应的代理类，代码重复度高，维护困难。
+- **定义:**  在编译时，代理类已经存在，代理对象和被代理对象之间是一对一的关系。
+- **实现方式:**  手动创建代理类，实现与被代理类相同的接口，在代理类中持有被代理类的实例，通过调用被代理类的方法来实现代理功能。
+- **优点:**  代码简单，易于理解。
+- **缺点:**  每增加一个被代理类，都需要创建一个对应的代理类，代码重复度高，维护困难。
 
 ### 动态代理
 
-- **定义**: 在运行时动态生成代理类，无需在编译时预先定义代理类。
-- **实现方式**:
-  - **JDK 动态代理**: 利用 Java 的反射机制，在运行时生成实现了指定接口的代理对象。要求被代理类必须实现接口。
-  - **CGLIB 动态代理**: 通过继承目标类，生成目标类的子类来实现代理。适用于没有实现接口的类，但无法代理 `final` 类和方法。
-- **优点**: 提高了代码的灵活性和复用性，减少了代理类的数量。
-- **缺点**: 相对于静态代理，性能开销略大，因为涉及到反射和动态生成类。
+- **定义:**  在运行时动态生成代理类，无需在编译时预先定义代理类。
+- **实现方式:**
+  - **JDK 动态代理:**  利用 Java 的反射机制，在运行时生成实现了指定接口的代理对象。要求被代理类必须实现接口。
+  - **CGLIB 动态代理:**  通过继承目标类，生成目标类的子类来实现代理。适用于没有实现接口的类，但无法代理 `final` 类和方法。
+- **优点:**  提高了代码的灵活性和复用性，减少了代理类的数量。
+- **缺点:**  相对于静态代理，性能开销略大，因为涉及到反射和动态生成类。
 
 > 很多场景都是利用类似机制做到的，比如用来包装 RPC 调用、面向切面的编程（AOP）。
 >
@@ -154,7 +154,7 @@ public class CGLIBProxyDemo {
 
 **​然而，JDK 9 的模块系统对[反射](/p/java-reflection)访问进行了严格控制，默认情况下，模块之间的访问是受限的**。因此，CGLIB 在尝试通过[反射](/p/java-reflection)访问 `ClassLoader.defineClass` 时会抛出 `InaccessibleObjectException`。
 
-**解决办法**: 可以在启动应用时添加 JVM 参数，显式打开需要的模块包，以允许 CGLIB 进行[反射](/p/java-reflection)访问。
+**解决办法:**  可以在启动应用时添加 JVM 参数，显式打开需要的模块包，以允许 CGLIB 进行[反射](/p/java-reflection)访问。
 
 ```bash
 --add-opens java.base/java.lang=ALL-UNNAMED
@@ -183,3 +183,82 @@ CGLIB 动态代理
   - **引入依赖**：需要引入 CGLIB 的依赖
 
 > 在实际应用中，框架如 Spring 会根据目标对象的情况，选择使用 JDK 动态代理或 CGLIB 动态代理，以实现 AOP 功能。​
+
+## 与装饰器模式的区别？
+
+代理模式和装饰器模式在结构上可能相似，但它们在**目的**、**关注点**和**使用方式**上有显著区别。
+
+**1. 目的:**
+
+- **代理模式（Proxy Pattern）:**  主要目的是控制对目标对象的访问。代理对象通常用于在客户端和真实对象之间提供一个中介，控制对真实对象的访问权限或添加额外的操作，例如延迟加载、安全检查或远程调用等。
+- **装饰器模式（Decorator Pattern）:**  主要目的是动态地增强对象的功能。通过将原始对象包装在装饰器中，可以在不修改原始类的情况下，添加新的行为或功能。
+
+**2. 关注点:**
+
+- **代理模式:**  关注于对对象访问的控制和管理，强调如何代理和控制对真实对象的操作。
+- **装饰器模式:**  关注于对对象功能的扩展和增强，强调如何在运行时添加新的功能或行为。
+
+**3. 使用方式:**
+
+- **代理模式:**  代理类通常在编译时就确定，与真实对象实现相同的接口，并持有对真实对象的引用。在客户端通过代理对象访问真实对象，代理对象可以在调用真实对象的方法前后添加额外的操作。
+- **装饰器模式:**  装饰器类也实现与被装饰对象相同的接口，但通常在运行时动态创建，并将被装饰对象作为构造参数传入。装饰器对象通过组合的方式，将增强功能添加到被装饰对象上。
+
+**示例:**
+
+- **代理模式:**
+
+```java
+  public interface Subject {
+      void request();
+  }
+
+  public class RealSubject implements Subject {
+      public void request() {
+          System.out.println("RealSubject request");
+      }
+  }
+
+  public class ProxySubject implements Subject {
+      private RealSubject realSubject;
+
+      public ProxySubject() {
+          this.realSubject = new RealSubject();
+      }
+
+      public void request() {
+          // 代理操作，例如访问控制
+          System.out.println("ProxySubject request");
+          realSubject.request();
+      }
+  }
+  ```
+
+- **装饰器模式:**
+
+```java
+  public interface Subject {
+      void request();
+  }
+
+  public class RealSubject implements Subject {
+      public void request() {
+          System.out.println("RealSubject request");
+      }
+  }
+
+  public class DecoratorSubject implements Subject {
+      private Subject subject;
+
+      public DecoratorSubject(Subject subject) {
+          this.subject = subject;
+      }
+
+      public void request() {
+          // 装饰操作，例如功能增强
+          System.out.println("DecoratorSubject request");
+          subject.request();
+      }
+  }
+  ```
+
+总结而言，代理模式侧重于控制对对象的访问，而装饰器模式侧重于增强对象的功能。代理对象通常用于控制对真实对象的访问权限，而装饰器对象用于在运行时动态地添加新的功能或行为。
