@@ -163,6 +163,7 @@ private int newCapacity(int minCapacity) {
      // 字符容量 → 字节长度
      int bytes = characters << coder;
      ```
+
 2. **扩容策略**：
 
    ```java
@@ -188,6 +189,7 @@ private int newCapacity(int minCapacity) {
       ├─超过限制 → 抛出OOM
       └─创建新数组 → 数据复制
    ```
+
 4. **性能优化点**：
 
    - **延迟计算**：只在需要扩容时进行计算
@@ -272,7 +274,7 @@ JDK17，Mac M1
 
 ## 最佳实践
 
-### 1. 选择策略
+### 选择策略
 
 - **优先使用String**：
 
@@ -290,7 +292,7 @@ JDK17，Mac M1
   - 全局日志缓冲区
   - 需要同步修改的共享资源
 
-### 2. 性能优化技巧
+### 性能优化技巧
 
 ```java
 // 预分配容量（减少扩容次数）
@@ -316,7 +318,7 @@ for (Data data : list) {
 }
 ```
 
-### 3. 特殊场景处理
+### 特殊场景处理
 
 **多线程安全操作**：
 
@@ -350,12 +352,67 @@ private ThreadLocal<StringBuilder> localBuilder =
 
 ## 进阶
 
-### 1. JDK9优化改进
+### JDK8优化改进
+
+在 Java 8 之后，编译器对 `String` 常量拼接进行了优化，主要是通过 **字符串常量池** 和 **`StringBuilder`** 进行优化。
+
+1. **常量折叠（Constant Folding）**：
+   - 编译器会在编译时将 `String` 的常量拼接计算出结果。这意味着在代码编译时，所有的常量字符串拼接都会被直接合并为一个常量字符串。
+   - 这种优化可以减少运行时的计算，因为常量拼接的结果已经在编译时得到了处理。
+
+   ```java
+   public class StringConcatenation {
+       public static void main(String[] args) {
+           String result = "Hello" + " " + "World";  // 这是常量拼接
+           System.out.println(result);
+       }
+   }
+   ```
+
+   编译器会直接把 `"Hello" + " " + "World"` 计算为 `"Hello World"`，因此代码最终会变成：
+
+   ```java
+   public class StringConcatenation {
+       public static void main(String[] args) {
+           String result = "Hello World";
+           System.out.println(result);
+       }
+   }
+   ```
+
+2. **字符串拼接使用 `StringBuilder`**：
+   - 对于运行时的拼接，编译器会自动使用 `StringBuilder` 来优化多个字符串的拼接操作，避免了重复创建临时 `String` 对象。
+
+   ```java
+   public class StringConcatenation {
+       public static void main(String[] args) {
+           String a = "Hello";
+           String b = "World";
+           String result = a + " " + b;  // 运行时拼接
+           System.out.println(result);
+       }
+   }
+   ```
+
+   编译器会优化为使用 `StringBuilder`，最终生成的字节码类似于：
+
+   ```java
+   public class StringConcatenation {
+       public static void main(String[] args) {
+           String a = "Hello";
+           String b = "World";
+           String result = new StringBuilder().append(a).append(" ").append(b).toString();
+           System.out.println(result);
+       }
+   }
+   ```
+
+### JDK9优化改进
 
 - **紧凑字符串**：根据内容自动选择Latin-1或UTF-16编码
 - **字符串去重**：G1垃圾收集器的字符串去重功能（-XX:+UseStringDeduplication）
 
-### 2. 内存泄漏防范
+### 内存泄漏防范
 
 ```java
 // 大字符串处理示例
@@ -370,7 +427,7 @@ void processHugeData() {
 }
 ```
 
-### 3. 字符串池机制
+### 字符串池机制
 
 ```java
 String s1 = "java";
