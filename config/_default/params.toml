@@ -49,14 +49,14 @@ type = "archives"
 [[widgets.homepage]]
 type = "categories"
 
-# [widgets.homepage.params]
-# limit = 10
+[widgets.homepage.params]
+limit = 200
 
 [[widgets.homepage]]
 type = "tag-cloud"
 
-# [widgets.homepage.params]
-# limit = 10
+[widgets.homepage.params]
+limit = 100
 
 [[widgets.page]]
 type = "toc"

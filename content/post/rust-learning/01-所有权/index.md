@@ -9,7 +9,7 @@ hidden: false
 comments: false
 draft: false
 tags: ["Rust", "所有权"]
-categories: ["Rust"]
+categories: ["Rust", "所有权"]
 # weight: 1 # You can add weight to some posts to override the default sorting (date descending)
 ---
 
