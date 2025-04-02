@@ -8,8 +8,8 @@ license: false
 hidden: false
 comments: false
 draft: false
-tags: ["Java", "final"]
-categories: ["Java"]
+tags: ["Java", "final", "不可变"]
+categories: ["Java", "不可变"]
 # weight: 1 # You can add weight to some posts to override the default sorting (date descending)
 ---
 
