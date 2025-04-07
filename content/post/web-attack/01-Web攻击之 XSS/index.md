@@ -7,7 +7,7 @@ image: ""
 license: false
 hidden: false
 comments: false
-draft: true
+draft: false
 tags: ["网络攻击", "XSS"]
 categories: ["网络攻击", "XSS"]
 # weight: 1 # You can add weight to some posts to override the default sorting (date descending)
