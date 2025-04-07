@@ -2,7 +2,7 @@
 title: "Web攻击之 SQL注入"
 description:
 date: "2024-04-07T14:48:30+08:00"
-slug: "01Webe))XSS"
+slug: "web-attack-sql-injection"
 image: ""
 license: false
 hidden: false

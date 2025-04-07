@@ -1,5 +1,5 @@
 ---
-title: "Web 攻击之 XSS"
+title: "Web攻击之 XSS"
 description:
 date: "2024-04-01T14:48:30+08:00"
 slug: "web-attack-xss"
@@ -59,7 +59,6 @@ XSS (Cross-Site Scripting) 是一种网站安全漏洞，其原理是放入恶�
   ```javascript
   http://site.com/search?q=<script>alert(1)</script>
   ```
-
 - **存储型**：
 
   ```html
