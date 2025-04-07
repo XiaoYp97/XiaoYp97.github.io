@@ -9,7 +9,7 @@ email = 'xyp_selune@163.com'
 name = 'Selune'
 
 [footer]
-since = 2022
+since = 2023
 customText = "想都是问题，做才是答案！"
 
 [dateFormat]

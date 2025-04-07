@@ -1,7 +1,7 @@
 ---
 title: "Iptables"
 description:
-date: "2022-12-28T21:15:49+08:00"
+date: "2023-12-28T21:15:49+08:00"
 slug: "Iptables"
 image: ""
 license: false
@@ -11,7 +11,6 @@ draft: false
 tags: ["Linux", "防火墙"]
 categories: ["Linux", "防火墙"]
 ---
-
 ## **iptables 是什么**
 
 iptables 是运行在用户空间的应用软件，通过控制Linux内核netfilter模块，来管理网络数据包的处理和转发。iptables只支持处理ipv4数据包，对于ipv6数据包，则需要ip6tables。
@@ -85,7 +84,7 @@ Usage: iptables -[ACD] chain rule-specification [options]
 
 #### **1. 针对 tcp 的扩展**
 
-当`--protocol tcp`被指定，且其他匹配的扩展未被指定时，这些扩展被装载。它提供以下选项：
+当 `--protocol tcp`被指定，且其他匹配的扩展未被指定时，这些扩展被装载。它提供以下选项：
 
 ```bash
 --source-port [!] [port[:port]]         源端口或端口范围指定，也可以使用服务名或端口号。如果使用端口范围，若首端口号忽略则默认为0，若尾端口号忽略则
@@ -105,7 +104,7 @@ Usage: iptables -[ACD] chain rule-specification [options]
 
 #### **2. 针对 udp 的扩展**
 
-当`--protocol udp`被指定，且其他匹配的扩展未被指定时，这些扩展被装载。它提供以下选项：
+当 `--protocol udp`被指定，且其他匹配的扩展未被指定时，这些扩展被装载。它提供以下选项：
 
 ```bash
 --source-port [!] [port:[port]]         源端口或端口范围指定
@@ -114,7 +113,7 @@ Usage: iptables -[ACD] chain rule-specification [options]
 
 #### **3. 针对 ICMP 的扩展**
 
-当`--protocol icmp`被指定，且其他匹配的扩展未被指定时，这些扩展被装载。它提供以下选项：
+当 `--protocol icmp`被指定，且其他匹配的扩展未被指定时，这些扩展被装载。它提供以下选项：
 
 ```bash
 --icmp-type [!] typename               这个选项允许指定ICMP类型，可以是一个数值型的ICMP类型，或者是某个由命令iptables -p icmp -h所显示的ICMP类型名
@@ -135,7 +134,7 @@ Usage: iptables -[ACD] chain rule-specification [options]
 
 ## **iptables targets 介绍**
 
-iptables的`-j`选项后面对应的是要执行的target。其中有些target具有一些扩展选项，下面我们会一并介绍：
+iptables的 `-j`选项后面对应的是要执行的target。其中有些target具有一些扩展选项，下面我们会一并介绍：
 
 ### **1. ACCEPT**
 

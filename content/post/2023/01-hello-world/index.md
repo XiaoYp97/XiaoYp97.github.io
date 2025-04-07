@@ -1,7 +1,7 @@
 ---
 title: "Hello World"
 description:
-date: "2022-10-12T19:31:57+08:00"
+date: "2023-02-12T19:31:57+08:00"
 slug: "hello-world"
 image: "hello-world.png"
 math: true
@@ -10,5 +10,4 @@ hidden: false
 comments: false
 draft: false
 ---
-
 > “Yeah It's on. ”

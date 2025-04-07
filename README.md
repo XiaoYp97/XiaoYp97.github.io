@@ -7,7 +7,7 @@
 ## Get started
 
 ```bash
-hugo new content "content/post/2022/hello-world/index.md"
+hugo new content "content/post/2023/hello-world/index.md"
 
 hugo server -D
 ```

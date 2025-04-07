@@ -1,7 +1,7 @@
 ---
 title: "Demo"
 description:
-date: "2022-03-10T11:54:01+08:00"
+date: "2023-03-10T11:54:01+08:00"
 slug: "demo"
 image: "cover.jpg"
 license: false
@@ -12,7 +12,6 @@ tags:
 categories:
 weight: 1 # You can add weight to some posts to override the default sorting (date descending)
 ---
-
 ## 图片库，Image Gallery
 
 使用 Markdown 创建精美的交互式图片库
@@ -48,7 +47,7 @@ $\varphi = \dfrac{1+\sqrt5}{2}= 1.6180339887…$
 ### 块数学
 
 $$
-    \varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } }
+\varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } }
 $$
 
 ```markdown
@@ -58,7 +57,7 @@ $$
 ```
 
 $$
-    f(x) = \int_{-\infty}^\infty\hat f(\xi)\,e^{2 \pi i \xi x}\,d\xi
+f(x) = \int_{-\infty}^\infty\hat f(\xi)\,e^{2 \pi i \xi x}\,d\xi
 $$
 
 ```markdown
@@ -85,11 +84,11 @@ $$
 
 ### 自定义视频文件
 
-{{< video "<https://www.w3schools.com/tags/movie.mp4>" >}}
+{{< video "[https://www.w3schools.com/tags/movie.mp4](https://www.w3schools.com/tags/movie.mp4)" >}}
 
-### Gist
+<!-- ### Gist
 
-{{< gist CaiJimmy e2751a943de10b2a5b3a8a6c2120cb86 >}}
+{{< gist CaiJimmy e2751a943de10b2a5b3a8a6c2120cb86 >}} -->
 
 ### GitLab
 
