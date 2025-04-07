@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>网络攻击 on XiaoYp - Blog</title><link>https://blog.selune.top/tags/%E7%BD%91%E7%BB%9C%E6%94%BB%E5%87%BB/</link><description>Recent content in 网络攻击 on XiaoYp - Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>xyp_selune@163.com (Selune)</managingEditor><webMaster>xyp_selune@163.com (Selune)</webMaster><lastBuildDate>Sun, 07 Apr 2024 14:48:30 +0800</lastBuildDate><atom:link href="https://blog.selune.top/tags/%E7%BD%91%E7%BB%9C%E6%94%BB%E5%87%BB/index.xml" rel="self" type="application/rss+xml"/><item><title>Web攻击之 SQL注入</title><link>https://blog.selune.top/p/web-attack-sql-injection/</link><pubDate>Sun, 07 Apr 2024 14:48:30 +0800</pubDate><author>xyp_selune@163.com (Selune)</author><guid>https://blog.selune.top/p/web-attack-sql-injection/</guid><description>&lt;h2 id="sql-注入是什么">SQL 注入是什么？
+&lt;/h2>&lt;blockquote>
+&lt;p>SQL 注入（SQL Injection）是一种攻击方式，攻击者通过“拼接用户输入”和数据库语句，让服务器执行恶意 SQL 命令，进而&lt;strong>读取、修改、删除数据，甚至控制数据库主机&lt;/strong>。&lt;/p>&lt;/blockquote>
+&lt;h2 id="sql-注入是怎么产生的">SQL 注入是怎么产生的？
+&lt;/h2>&lt;blockquote>
+&lt;p>本质：&lt;strong>用户输入参与了 SQL 拼接，且没有做安全处理。&lt;/strong>&lt;/p>&lt;/blockquote>
+&lt;p>比如你写了这样的代码：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-sql" data-lang="sql">&lt;span class="line">&lt;span class="cl">&lt;span class="k">SELECT&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">FROM&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">users&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">WHERE&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">username&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;admin&amp;#39;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">AND&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">password&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;123456&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>用户在登录框输入：&lt;/p>
+&lt;ul>
+&lt;li>用户名：&lt;code>admin' --&lt;/code>&lt;/li>
+&lt;li>密码：（随便填）&lt;/li>
+&lt;/ul>
+&lt;p>结果 SQL 变成了：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-sql" data-lang="sql">&lt;span class="line">&lt;span class="cl">&lt;span class="k">SELECT&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">FROM&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">users&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">WHERE&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">username&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;admin&amp;#39;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">--&amp;#39; AND password = &amp;#39;xxx&amp;#39;;
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;code>--&lt;/code> 是 SQL 中的注释符，后面的部分被忽略，攻击者绕过了密码验证，&lt;strong>成功登录后台&lt;/strong>！&lt;/p>
+&lt;h2 id="sql-注入能造成什么危害">SQL 注入能造成什么危害？
+&lt;/h2>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>危害类别&lt;/th>
+&lt;th>具体描述&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>登录绕过&lt;/td>
+&lt;td>修改 SQL 语句逻辑，&lt;strong>无需密码直接登录账号&lt;/strong>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>数据泄露&lt;/td>
+&lt;td>&lt;code>UNION SELECT&lt;/code> 等方式读取敏感数据（账号、密码、银行卡）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>数据篡改&lt;/td>
+&lt;td>执行 &lt;code>UPDATE&lt;/code>、&lt;code>DELETE&lt;/code> 操作，&lt;strong>删库跑路&lt;/strong>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>写入后门&lt;/td>
+&lt;td>某些情况下配合文件写入，&lt;strong>写入 Webshell&lt;/strong>，反弹命令行&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>拓展攻击&lt;/td>
+&lt;td>通过数据库获取服务器权限，进一步横向移动攻击其他系统&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="如何防御-sql-注入核心方法">如何防御 SQL 注入？（核心方法）
+&lt;/h2>&lt;h3 id="使用-预编译语句prepared-statement">使用 &lt;strong>预编译语句（Prepared Statement）&lt;/strong>
+&lt;/h3>&lt;blockquote>
+&lt;p>&lt;strong>千万别直接拼接字符串！&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>千万别直接拼接字符串！&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>千万别直接拼接字符串！&lt;/strong>&lt;/p>&lt;/blockquote>
+&lt;p>&lt;strong>错误写法（易被注入）：&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">sql&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;SELECT * FROM users WHERE username = &amp;#39;&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">user&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;&amp;#39;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;strong>正确写法（参数绑定，防注入）：&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">cursor&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">execute&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;SELECT * FROM users WHERE username = &lt;/span>&lt;span class="si">%s&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">user&lt;/span>&lt;span class="p">,))&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>各种语言通用写法推荐使用：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>语言&lt;/th>
+&lt;th>推荐库&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>PHP&lt;/td>
+&lt;td>PDO + bindParam&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Python&lt;/td>
+&lt;td>&lt;code>cursor.execute(sql, param)&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Java&lt;/td>
+&lt;td>&lt;code>PreparedStatement&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Node.js&lt;/td>
+&lt;td>&lt;code>mysql.format()&lt;/code>、ORM&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="输入校验--白名单限制">输入校验 + 白名单限制
+&lt;/h3>&lt;ul>
+&lt;li>只允许合法字符（如用户名只能是字母、数字）&lt;/li>
+&lt;li>限制字段长度、格式（如手机号必须 11 位）&lt;/li>
+&lt;/ul>
+&lt;h3 id="最小权限原则">最小权限原则
+&lt;/h3>&lt;ul>
+&lt;li>数据库账号只给必要权限&lt;/li>
+&lt;li>不要用 &lt;code>root&lt;/code> 账户连接数据库！&lt;/li>
+&lt;/ul>
+&lt;h3 id="错误信息不暴露">错误信息不暴露
+&lt;/h3>&lt;ul>
+&lt;li>SQL 报错不能直接显示给用户（容易泄露表名、字段名）&lt;/li>
+&lt;li>使用统一的错误提示页面&lt;/li>
+&lt;/ul>
+&lt;h3 id="使用-orm-框架但要小心">使用 ORM 框架（但要小心）
+&lt;/h3>&lt;p>ORM（如 Django ORM、Hibernate）默认防注入，但：&lt;/p>
+&lt;ul>
+&lt;li>仍可能因原生 SQL 被误用而注入&lt;/li>
+&lt;li>ORM 的 &lt;code>extra()&lt;/code> / &lt;code>raw()&lt;/code> / &lt;code>execute()&lt;/code> 等接口使用时要小心&lt;/li>
+&lt;/ul>
+&lt;h3 id="wafips-网络层防御">WAF/IPS 网络层防御
+&lt;/h3>&lt;ul>
+&lt;li>使用 Web 应用防火墙拦截注入关键词&lt;/li>
+&lt;li>配合日志报警、验证码限制等方式增强防御深度&lt;/li>
+&lt;/ul>
+&lt;h2 id="总结一句话">总结一句话
+&lt;/h2>&lt;blockquote>
+&lt;p>&lt;strong>SQL 注入之所以可怕，是因为开发者信了用户的“输入”，数据库却把它当“命令”。&lt;/strong>&lt;/p>&lt;/blockquote></description></item><item><title>Web攻击之 XSS</title><link>https://blog.selune.top/p/web-attack-xss/</link><pubDate>Mon, 01 Apr 2024 14:48:30 +0800</pubDate><author>xyp_selune@163.com (Selune)</author><guid>https://blog.selune.top/p/web-attack-xss/</guid><description>&lt;h2 id="xss-是什么">XSS 是什么？
+&lt;/h2>&lt;p>XSS (Cross-Site Scripting) 是一种网站安全漏洞，其原理是放入恶意脚本，让用户的浏览器执行网站未筛查的 JS 脚本，导致数据被窃取、表单被作弊、页面被篡改等。&lt;/p>
+&lt;blockquote>
+&lt;p>XSS 不只是技术漏洞，更是信任的破坏者!&lt;/p>
+&lt;p>XSS 看起来是弹个窗，实际上是把钥匙偷了、钱抽了、后面还跟你说是你自愿的。&lt;/p>&lt;/blockquote>
+&lt;h2 id="xss-类型">XSS 类型
+&lt;/h2>&lt;h3 id="反射型-xssreflected-xss">&lt;strong>反射型 XSS（Reflected XSS）&lt;/strong>
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>过程&lt;/strong>：攻击者构造一个恶意链接，把 &lt;code>&amp;lt;script&amp;gt;&lt;/code> 放在 URL 里 → 受害者点击链接 → 服务端把参数原样“反射”回网页 → 浏览器执行脚本。&lt;/li>
+&lt;li>&lt;strong>关键点&lt;/strong>：攻击代码不在服务端持久保存，靠“钓鱼链接”触发。&lt;/li>
+&lt;li>&lt;strong>常见场景&lt;/strong>：搜索框、跳转链接、错误提示信息。&lt;/li>
+&lt;/ul>
+&lt;p>🧠 类比记忆：像“回音墙”，你说什么它就回什么。&lt;/p>
+&lt;hr>
+&lt;h3 id="存储型-xssstored-xss">&lt;strong>存储型 XSS（Stored XSS）&lt;/strong>
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>过程&lt;/strong>：攻击者提交脚本（比如发评论）→ 服务端保存到数据库 → 其他用户访问这条评论 → 浏览器执行脚本。&lt;/li>
+&lt;li>&lt;strong>关键点&lt;/strong>：脚本 &lt;strong>被存储下来&lt;/strong>，访问页面时自动触发，不需要特意点击链接。&lt;/li>
+&lt;li>&lt;strong>常见场景&lt;/strong>：评论区、论坛帖子、个人资料页、客服聊天记录等。&lt;/li>
+&lt;/ul>
+&lt;p>🧠 类比记忆：像病毒藏在快递里，每个人收件就会感染。&lt;/p>
+&lt;hr>
+&lt;h3 id="dom-型-xssdom-based-xss">&lt;strong>DOM 型 XSS（DOM-based XSS）&lt;/strong>
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>过程&lt;/strong>：浏览器 JS 读取 URL 参数、Hash、Cookie 等 → 动态写入页面（innerHTML、document.write） → 没有做转义 → 执行脚本。&lt;/li>
+&lt;li>&lt;strong>关键点&lt;/strong>：&lt;strong>完全不经过服务端&lt;/strong>，漏洞存在于前端 JS 的处理逻辑中。&lt;/li>
+&lt;li>&lt;strong>常见场景&lt;/strong>：单页应用（SPA）、前端框架中常见。&lt;/li>
+&lt;/ul>
+&lt;p>🧠 类比记忆：像是浏览器自己给自己挖坑，自己跳进去。&lt;/p>
+&lt;h3 id="一个例子三种写法对比">一个例子，三种写法对比
+&lt;/h3>&lt;p>以攻击者想弹窗 &lt;code>alert(1)&lt;/code> 为例：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>反射型&lt;/strong>：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="nx">http&lt;/span>&lt;span class="o">:&lt;/span>&lt;span class="c1">//site.com/search?q=&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>存储型&lt;/strong>：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">input&lt;/span> &lt;span class="na">name&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;comment&amp;#34;&lt;/span> &lt;span class="na">value&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&amp;#34;&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>然后这个评论被存进数据库，别人一打开就触发。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>DOM 型&lt;/strong>（JS 代码）：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// JS 代码直接取 URL 参数插到页面
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nb">document&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">getElementById&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;output&amp;#39;&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="nx">innerHTML&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">location&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">hash&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 访问： http://site.com/#&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;h3 id="核心区别">核心区别
+&lt;/h3>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>类型&lt;/th>
+&lt;th>恶意脚本位置&lt;/th>
+&lt;th>触发方式&lt;/th>
+&lt;th>是否存储&lt;/th>
+&lt;th>示例&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>反射型 XSS&lt;/td>
+&lt;td>URL 参数中&lt;/td>
+&lt;td>点击恶意链接&lt;/td>
+&lt;td>❌ 否&lt;/td>
+&lt;td>搜索“&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;”&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>存储型 XSS&lt;/td>
+&lt;td>数据库 / 日志&lt;/td>
+&lt;td>打开启用页面&lt;/td>
+&lt;td>✅ 是&lt;/td>
+&lt;td>评论区中的 script&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>DOM 型 XSS&lt;/td>
+&lt;td>前端 DOM 操作&lt;/td>
+&lt;td>JS 代码动态触发&lt;/td>
+&lt;td>❌ 否&lt;/td>
+&lt;td>JS 把 location.hash 写入 HTML&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="xss-的害处">XSS 的害处
+&lt;/h2>&lt;h3 id="对个人">【对个人】
+&lt;/h3>&lt;ul>
+&lt;li>窃取 Cookie/会话凭证：偷取登录状态，偷取账号&lt;/li>
+&lt;li>伪造页面：伪认证/伪支付码&lt;/li>
+&lt;li>强制操作：切换场景合成 CSRF&lt;/li>
+&lt;li>推光性弹窗/跳转：骗屏/色情/转账&lt;/li>
+&lt;/ul>
+&lt;h3 id="对系统">【对系统】
+&lt;/h3>&lt;ul>
+&lt;li>数据大量被偷取&lt;/li>
+&lt;li>网站内容被乱篡改&lt;/li>
+&lt;li>添加 iframe 或动态下载构成木马&lt;/li>
+&lt;/ul>
+&lt;h3 id="对业务">【对业务】
+&lt;/h3>&lt;ul>
+&lt;li>用户信任层层坏坏&lt;/li>
+&lt;li>规范风险（如 GDPR、网安法）&lt;/li>
+&lt;li>被搜索引擎/安全网站拦截&lt;/li>
+&lt;/ul>
+&lt;h2 id="防御">防御
+&lt;/h2>&lt;h3 id="输出编码最核心">输出编码（最核心！）
+&lt;/h3>&lt;blockquote>
+&lt;p>原则：&lt;strong>“信用户输入，死得很惨；编码输出，活得很稳。”&lt;/strong>&lt;/p>&lt;/blockquote>
+&lt;p>根据输出位置做对应编码（不只是替换 &lt;code>&amp;lt; &amp;gt;&lt;/code> 这么简单）：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>输出位置&lt;/th>
+&lt;th>编码方式&lt;/th>
+&lt;th>示例&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>HTML 元素内容&lt;/td>
+&lt;td>&lt;code>htmlEncode()&lt;/code>&lt;/td>
+&lt;td>&lt;code>&amp;lt;div&amp;gt;${userInput}&amp;lt;/div&amp;gt;&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>HTML 属性值&lt;/td>
+&lt;td>&lt;code>attributeEncode()&lt;/code>&lt;/td>
+&lt;td>&lt;code>&amp;lt;a href=&amp;quot;${userInput}&amp;quot;&amp;gt;&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>JS 中的变量&lt;/td>
+&lt;td>&lt;code>jsEncode()&lt;/code>&lt;/td>
+&lt;td>&lt;code>var msg = '${input}';&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>URL 中的参数&lt;/td>
+&lt;td>&lt;code>encodeURIComponent()&lt;/code>&lt;/td>
+&lt;td>&lt;code>location.href = ...&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;blockquote>
+&lt;p>✍️ 记住一句话：&lt;strong>不要原样输出用户输入，必须根据上下文编码！&lt;/strong>&lt;/p>&lt;/blockquote>
+&lt;h3 id="输入过滤辅助防线">输入过滤（辅助防线）
+&lt;/h3>&lt;p>虽然不能完全防止 XSS，但能大幅降低攻击难度。&lt;/p>
+&lt;ul>
+&lt;li>去除标签：如 &lt;code>&amp;lt;script&amp;gt;&lt;/code>, &lt;code>&amp;lt;iframe&amp;gt;&lt;/code> 等。&lt;/li>
+&lt;li>黑名单法有限，推荐使用白名单法：只允许部分 HTML 标签。
+&lt;ul>
+&lt;li>推荐库：&lt;code>DOMPurify&lt;/code>（前端） / &lt;code>OWASP Java HTML Sanitizer&lt;/code>（后端）&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="http-安全头部设置">HTTP 安全头部设置
+&lt;/h3>&lt;p>&lt;strong>Content-Security-Policy (CSP):&lt;/strong>&lt;/p>
+&lt;p>定义允许加载的资源类型、域名，阻止恶意脚本执行。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-http" data-lang="http">&lt;span class="line">&lt;span class="cl">&lt;span class="err">Content-Security-Policy: default-src &amp;#39;self&amp;#39;; script-src &amp;#39;self&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>作用：&lt;/p>
+&lt;ul>
+&lt;li>禁止内联 &lt;code>&amp;lt;script&amp;gt;&lt;/code> 执行&lt;/li>
+&lt;li>阻止第三方 JS 加载&lt;/li>
+&lt;li>检测异常行为&lt;/li>
+&lt;/ul>
+&lt;h3 id="httponly--secure-cookie">HttpOnly + Secure Cookie
+&lt;/h3>&lt;p>&lt;strong>设置 Cookie 为 HttpOnly:&lt;/strong>&lt;/p>
+&lt;p>防止 JS 读取 Cookie（攻击者窃取失败）。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-http" data-lang="http">&lt;span class="line">&lt;span class="cl">&lt;span class="err">Set-Cookie: session=xxx; HttpOnly; Secure
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="前端框架防护机制但别完全依赖">前端框架防护机制（但别完全依赖）
+&lt;/h3>&lt;ul>
+&lt;li>Vue、React 等默认会对数据做 HTML 转义&lt;/li>
+&lt;li>&lt;strong>但要注意&lt;/strong>：
+&lt;ul>
+&lt;li>&lt;code>v-html&lt;/code>（Vue）/ &lt;code>dangerouslySetInnerHTML&lt;/code>（React） 这些接口绕过了防护！&lt;/li>
+&lt;li>千万不要对用户数据使用这些 API！&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="其他补充措施">其他补充措施
+&lt;/h3>&lt;ul>
+&lt;li>表单提交加验证码：减缓自动化脚本攻击&lt;/li>
+&lt;li>日志记录 + 异常监控：配合 WAF 实时监控异常行为&lt;/li>
+&lt;li>使用 Web 安全网关 / 云 WAF：防护基础设施级别的 XSS 尝试&lt;/li>
+&lt;/ul>
+&lt;h3 id="一句话总结">一句话总结
+&lt;/h3>&lt;blockquote>
+&lt;p>&lt;strong>XSS 防不住的根本原因，不是框架不行，是开发者在瞎传字符串。&lt;/strong>&lt;/p>
+&lt;p>所以防御的关键在于：&lt;strong>凡是用户输入的，都不要相信；凡是输出前的，都要处理。&lt;/strong>&lt;/p>&lt;/blockquote></description></item></channel></rss>
