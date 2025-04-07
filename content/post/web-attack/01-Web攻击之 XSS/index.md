@@ -1,7 +1,7 @@
 ---
 title: "Web 攻击之 XSS"
 description:
-date: "2024-04-07T14:48:30+08:00"
+date: "2024-04-01T14:48:30+08:00"
 slug: "web-attack-xss"
 image: ""
 license: false
@@ -12,7 +12,6 @@ tags: ["网络攻击", "XSS"]
 categories: ["网络攻击", "XSS"]
 # weight: 1 # You can add weight to some posts to override the default sorting (date descending)
 ---
-
 ## XSS 是什么？
 
 XSS (Cross-Site Scripting) 是一种网站安全漏洞，其原理是放入恶意脚本，让用户的浏览器执行网站未筛查的 JS 脚本，导致数据被窃取、表单被作弊、页面被篡改等。
@@ -68,7 +67,6 @@ XSS (Cross-Site Scripting) 是一种网站安全漏洞，其原理是放入恶�
   ```
 
   然后这个评论被存进数据库，别人一打开就触发。
-
 - **DOM 型**（JS 代码）：
 
   ```javascript
@@ -79,11 +77,11 @@ XSS (Cross-Site Scripting) 是一种网站安全漏洞，其原理是放入恶�
 
 ### 核心区别
 
-| 类型         | 恶意脚本位置 | 触发方式           | 是否存储 | 示例                 |
-|------------------|------------------|--------------------|--------------|----------------------|
-| 反射型 XSS   | URL 参数中       | 点击恶意链接      | ❌ 否         | 搜索“\<script>alert(1)\</script>” |
-| 存储型 XSS   | 数据库 / 日志   | 打开启用页面     | ✅ 是         | 评论区中的 script     |
-| DOM 型 XSS    | 前端 DOM 操作 | JS 代码动态触发   | ❌ 否         | JS 把 location.hash 写入 HTML |
+| 类型       | 恶意脚本位置  | 触发方式        | 是否存储 | 示例                                |
+| ---------- | ------------- | --------------- | -------- | ----------------------------------- |
+| 反射型 XSS | URL 参数中    | 点击恶意链接    | ❌ 否    | 搜索“\<script>alert(1)\</script>” |
+| 存储型 XSS | 数据库 / 日志 | 打开启用页面    | ✅ 是    | 评论区中的 script                   |
+| DOM 型 XSS | 前端 DOM 操作 | JS 代码动态触发 | ❌ 否    | JS 把 location.hash 写入 HTML       |
 
 ## XSS 的害处
 
@@ -114,12 +112,12 @@ XSS (Cross-Site Scripting) 是一种网站安全漏洞，其原理是放入恶�
 
 根据输出位置做对应编码（不只是替换 `< >` 这么简单）：
 
-| 输出位置         | 编码方式                   | 示例                      |
-|------------------|----------------------------|---------------------------|
-| HTML 元素内容     | `htmlEncode()`             | `<div>${userInput}</div>` |
-| HTML 属性值       | `attributeEncode()`        | `<a href="${userInput}">` |
-| JS 中的变量       | `jsEncode()`               | `var msg = '${input}';`   |
-| URL 中的参数      | `encodeURIComponent()`     | `location.href = ...`     |
+| 输出位置      | 编码方式                 | 示例                        |
+| ------------- | ------------------------ | --------------------------- |
+| HTML 元素内容 | `htmlEncode()`         | `<div>${userInput}</div>` |
+| HTML 属性值   | `attributeEncode()`    | `<a href="${userInput}">` |
+| JS 中的变量   | `jsEncode()`           | `var msg = '${input}';`   |
+| URL 中的参数  | `encodeURIComponent()` | `location.href = ...`     |
 
 > ✍️ 记住一句话：**不要原样输出用户输入，必须根据上下文编码！**
 
