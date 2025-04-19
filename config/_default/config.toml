@@ -1,7 +1,7 @@
 # Change baseurl before deploy
-baseurl = "https://blog.selune.top/"
+baseurl = "https://blog.yellster.top/"
 languageCode = "zh-cn"
-title = "XiaoYp - Blog"
+title = "Yellster - Blog"
 subtitle = "想都是问题，做才是答案！"
 
 # Theme i18n support

@@ -13,4 +13,4 @@ menu:
         params:
             icon: user
 ---
-Hi，我是 XiaoYp，这里是我的个人博客，所有言论仅代表个人观点。
+Hi，我是 Yellster，这里是我的个人博客，所有言论仅代表个人观点。
