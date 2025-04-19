@@ -2,7 +2,7 @@
 mainSections = ["post"]
 # Output page's full content in RSS.
 rssFullContent = true
-favicon = "https://avatars.githubusercontent.com/u/37898221?v=4"
+favicon = "https://avatars.githubusercontent.com/u/37898221"
 
 [author]
 email = 'xyp_selune@163.com'
