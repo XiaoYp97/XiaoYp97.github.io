@@ -3,10 +3,10 @@ title: 链接
 slug: "links"
 layout: "links"
 links:
-  - title: GitHub
-    description: GitHub is the world's largest software development platform.
-    website: https://github.com
-    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  - title: with-proxy
+    description: A CLI tool that reads proxy configuration from ${HOME}/.env and sets temporary proxy settings.
+    website: https://crates.io/crates/with-proxy
+    image: https://crates.io/assets/cargo.png
 menu:
     main:
         weight: 4
