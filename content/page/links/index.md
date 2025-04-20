@@ -1,5 +1,6 @@
 ---
 title: "链接"
+slug: "links"
 menu:
     main:
         weight: 4
