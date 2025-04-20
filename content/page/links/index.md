@@ -8,7 +8,7 @@ menu:
         params:
             icon: link
 comments: false
-readingTime: false
+# readingTime: false
 
 links:
   - title: GitHub
