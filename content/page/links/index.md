@@ -1,15 +1,9 @@
 ---
-title: 链接
-slug: "links"
-layout: "links"
+title: Links
 links:
-  - title: with-proxy
-    description: A CLI tool that reads proxy configuration from ${HOME}/.env and sets temporary proxy settings.
-    website: https://crates.io/crates/with-proxy
-    image: https://crates.io/assets/cargo.png
-  - title: BingImg
-    description: Bing 每日一图
-    website: https://github.com/Yellster/BingImg
+  - title: GitHub
+    description: GitHub is the world's largest software development platform.
+    website: https://github.com
     image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 menu:
     main:
@@ -18,8 +12,22 @@ menu:
             icon: link
 
 comments: false
-readingTime: false
-license: false
 ---
 
-作品集 & 友链
+To use this feature, add `links` section to frontmatter.
+
+This page's frontmatter:
+
+```yaml
+links:
+  - title: GitHub
+    description: GitHub is the world's largest software development platform.
+    website: https://github.com
+    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  - title: TypeScript
+    description: TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.
+    website: https://www.typescriptlang.org
+    image: ts-logo-128.jpg
+```
+
+`image` field accepts both local and external images.
