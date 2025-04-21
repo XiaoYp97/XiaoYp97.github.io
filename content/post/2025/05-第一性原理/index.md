@@ -3,7 +3,7 @@ title: "第一性原理"
 description: "第一性原理（First Principles）是一种从最基本、最本质的层面思考问题的方法，要求我们抛开所有假设和成见，从最基础的真理出发重新构建认知。"
 date: "2025-04-21T17:56:08+08:00"
 slug: "first-principle"
-image: ""
+image: "第一性原理.webp"
 license: false
 hidden: false
 comments: false
