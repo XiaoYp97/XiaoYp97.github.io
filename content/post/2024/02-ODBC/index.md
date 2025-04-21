@@ -8,11 +8,10 @@ license: false
 hidden: false
 comments: false
 draft: false
-tags: ["数据库", "驱动", "ODBC"]
-categories: ["数据库", "驱动"]
+tags: ["数据库", "驱动", "ODBC", "随记"]
+categories: ["数据库", "驱动", "随记"]
 # weight: 1 # You can add weight to some posts to override the default sorting (date descending)
 ---
-
 - **ODBC, Open Database Connectivity** 是由 Microsoft 开发的数据库连接标准。
 - 它允许应用程序使用标准化的接口访问不同的数据库系统。
 

@@ -3,7 +3,7 @@ title: "访问网站缺少样式"
 description:
 date: "2023-10-23T15:14:25+08:00"
 slug: "访问网站缺少样式"
-image: ""
+image: "unsafe_link.png"
 license: false
 hidden: false
 comments: false
