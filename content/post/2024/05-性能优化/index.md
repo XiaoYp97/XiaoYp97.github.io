@@ -1,9 +1,9 @@
 ---
 title: "性能优化：从数据出发，基于实际需求"
-description: ""
+description: "性能优化的本质是提升用户体验，并提高系统的效率。要达成这一目标，我们需要从系统最基本的组成部分和性能指标入手。"
 date: "2024-09-11T18:19:26+08:00"
 slug: "performance-optimization"
-image: ""
+image: "性能优化.webp"
 license: false
 hidden: false
 comments: false
