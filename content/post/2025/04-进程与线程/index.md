@@ -3,7 +3,7 @@ title: "进程与线程"
 description:
 date: "2025-04-11T13:38:57+08:00"
 slug: "process-thread"
-image: ""
+image: "process-thread.webp"
 license: false
 hidden: false
 comments: false
@@ -12,7 +12,6 @@ tags: ["Linux", "进程", "线程", "操作系统"]
 categories: ["Linux", "操作系统"]
 # weight: 1 # You can add weight to some posts to override the default sorting (date descending)
 ---
-
 在现代操作系统中，进程、线程和虚拟地址是支撑系统高效执行、内存管理和资源隔离的核心概念。
 
 ## 进程：资源分配与隔离的基本单位

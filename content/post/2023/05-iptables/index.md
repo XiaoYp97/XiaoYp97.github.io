@@ -2,8 +2,8 @@
 title: "Iptables"
 description:
 date: "2023-12-28T21:15:49+08:00"
-slug: "Iptables"
-image: ""
+slug: "iptables"
+image: "iptables.webp"
 license: false
 hidden: false
 comments: false
