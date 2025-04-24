@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>技术术语 on Yellster - Blog</title><link>https://blog.yellster.top/tags/%E6%8A%80%E6%9C%AF%E6%9C%AF%E8%AF%AD/</link><description>Recent content in 技术术语 on Yellster - Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>xyp_selune@163.com (Yellster)</managingEditor><webMaster>xyp_selune@163.com (Yellster)</webMaster><lastBuildDate>Mon, 24 Mar 2025 22:30:59 +0800</lastBuildDate><atom:link href="https://blog.yellster.top/tags/%E6%8A%80%E6%9C%AF%E6%9C%AF%E8%AF%AD/index.xml" rel="self" type="application/rss+xml"/><item><title>LLM领域的术语及其中文翻译</title><link>https://blog.yellster.top/p/llm-terminology-chinese-translations/</link><pubDate>Mon, 24 Mar 2025 22:30:59 +0800</pubDate><author>xyp_selune@163.com (Yellster)</author><guid>https://blog.yellster.top/p/llm-terminology-chinese-translations/</guid><description>&lt;h2 id="模型名称及其中英文对应">模型名称及其中英文对应
+&lt;/h2>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;strong>英文名称&lt;/strong>&lt;/th>
+&lt;th>&lt;strong>中文对应&lt;/strong>&lt;/th>
+&lt;th>&lt;strong>全称&lt;/strong>&lt;/th>
+&lt;th>&lt;strong>中文全称翻译&lt;/strong>&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>GPT-3/GPT-4&lt;/td>
+&lt;td>GPT-3/GPT-4&lt;/td>
+&lt;td>Generative Pre-trained Transformer 3/4&lt;/td>
+&lt;td>生成式预训练变换器 3/4&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>BERT&lt;/td>
+&lt;td>BERT&lt;/td>
+&lt;td>Bidirectional Encoder Representations from Transformers&lt;/td>
+&lt;td>双向编码器表示来自变换器&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>RoBERTa&lt;/td>
+&lt;td>RoBERTa&lt;/td>
+&lt;td>Robustly Optimized BERT Pre-Training Approach&lt;/td>
+&lt;td>稳健优化 BERT 预训练方法&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>XLNet&lt;/td>
+&lt;td>XLNet&lt;/td>
+&lt;td>XLNet&lt;/td>
+&lt;td>XLNet&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>T5&lt;/td>
+&lt;td>T5&lt;/td>
+&lt;td>Text-to-Text Transfer Transformer&lt;/td>
+&lt;td>文本到文本转移变换器&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>BART&lt;/td>
+&lt;td>BART&lt;/td>
+&lt;td>Bidirectional and Auto-Regressive Transformers&lt;/td>
+&lt;td>双向和自回归变换器&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>ELECTRA&lt;/td>
+&lt;td>ELECTRA&lt;/td>
+&lt;td>Efficiently Learning an Encoder that Classifies Token Replacements Accurately&lt;/td>
+&lt;td>高效学习编码器分类令牌替换准确&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>DeBERTa&lt;/td>
+&lt;td>DeBERTa&lt;/td>
+&lt;td>Decoding-enhanced BERT with Disentangled Attention&lt;/td>
+&lt;td>解码增强 BERT 具有解耦注意力&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>PaLM&lt;/td>
+&lt;td>PaLM&lt;/td>
+&lt;td>Pathways Language Model&lt;/td>
+&lt;td>路径语言模型&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LLaMA&lt;/td>
+&lt;td>LLaMA&lt;/td>
+&lt;td>Large Language Model Meta AI&lt;/td>
+&lt;td>大型语言模型 Meta AI&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>BLOOM&lt;/td>
+&lt;td>BLOOM&lt;/td>
+&lt;td>BigScience Large Open-science Open-access Multilangual language model&lt;/td>
+&lt;td>BigScience 大型开源多语言语言模型&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Chinchilla&lt;/td>
+&lt;td>Chinchilla&lt;/td>
+&lt;td>Chinchilla&lt;/td>
+&lt;td>Chinchilla&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>OPT&lt;/td>
+&lt;td>OPT&lt;/td>
+&lt;td>Open Pre-trained Transformer&lt;/td>
+&lt;td>开放预训练变换器&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>ERNIE&lt;/td>
+&lt;td>ERNIE（文心一言）&lt;/td>
+&lt;td>Enhanced Representation through Knowledge Integration&lt;/td>
+&lt;td>通过知识集成增强表示&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>CPM&lt;/td>
+&lt;td>CPM&lt;/td>
+&lt;td>Chinese Pre-trained Model&lt;/td>
+&lt;td>中文预训练模型&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>GLM&lt;/td>
+&lt;td>GLM&lt;/td>
+&lt;td>General Language Model&lt;/td>
+&lt;td>通用语言模型&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>MacBert&lt;/td>
+&lt;td>MacBert&lt;/td>
+&lt;td>MacBert&lt;/td>
+&lt;td>MacBert&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Chinese BERT&lt;/td>
+&lt;td>Chinese BERT&lt;/td>
+&lt;td>Chinese BERT&lt;/td>
+&lt;td>中文 BERT&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="术语及其中英文对应">术语及其中英文对应
+&lt;/h2>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>英文术语&lt;/th>
+&lt;th>中文翻译&lt;/th>
+&lt;th>说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>AIGC&lt;/td>
+&lt;td>人工智能生成内容&lt;/td>
+&lt;td>通过AI技术自动生成的各类媒体内容（文本、图像、音频等）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Large Language Model&lt;/td>
+&lt;td>大型语言模型&lt;/td>
+&lt;td>LLM 的核心概念&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Pre training&lt;/td>
+&lt;td>预训练&lt;/td>
+&lt;td>模型在大量数据上的初始训练&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Fine-tuning&lt;/td>
+&lt;td>微调&lt;/td>
+&lt;td>在特定任务上调整模型&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Transformer&lt;/td>
+&lt;td>变换器&lt;/td>
+&lt;td>LLM 常用的架构&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Attention mechanism&lt;/td>
+&lt;td>注意力机制&lt;/td>
+&lt;td>变换器中的关键技术&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Word embedding&lt;/td>
+&lt;td>词嵌入&lt;/td>
+&lt;td>单词到向量表示&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Contextualized embedding&lt;/td>
+&lt;td>上下文嵌入&lt;/td>
+&lt;td>考虑上下文的嵌入&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Masked language modeling&lt;/td>
+&lt;td>掩码语言建模&lt;/td>
+&lt;td>BERT 使用的预训练任务&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Next sentence prediction&lt;/td>
+&lt;td>下一句预测&lt;/td>
+&lt;td>BERT 早期使用的任务&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Transfer learning&lt;/td>
+&lt;td>迁移学习&lt;/td>
+&lt;td>模型在不同任务间的应用&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Natural language processing&lt;/td>
+&lt;td>自然语言处理&lt;/td>
+&lt;td>LLM 的应用领域&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Deep learning&lt;/td>
+&lt;td>深度学习&lt;/td>
+&lt;td>LLM 的基础技术&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Neural network&lt;/td>
+&lt;td>神经网络&lt;/td>
+&lt;td>深度学习的构建块&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Gradient descent&lt;/td>
+&lt;td>梯度下降&lt;/td>
+&lt;td>优化算法&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Backpropagation&lt;/td>
+&lt;td>反向传播&lt;/td>
+&lt;td>训练神经网络的核心方法&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Prompt&lt;/td>
+&lt;td>提示&lt;/td>
+&lt;td>输入给模型的指令&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Prompt engineering&lt;/td>
+&lt;td>提示工程&lt;/td>
+&lt;td>优化提示以改善输出&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Few-shot learning&lt;/td>
+&lt;td>少样本学习&lt;/td>
+&lt;td>少量示例下学习&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Zero-shot learning&lt;/td>
+&lt;td>零样本学习&lt;/td>
+&lt;td>无示例直接推理&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>In-context learning&lt;/td>
+&lt;td>上下文学习&lt;/td>
+&lt;td>基于上下文的推理&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Parameter-efficient fine-tuning&lt;/td>
+&lt;td>参数高效微调&lt;/td>
+&lt;td>减少参数调整的微调方法&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Model scaling&lt;/td>
+&lt;td>模型扩展&lt;/td>
+&lt;td>增加模型规模以提升性能&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Compute-optimal scaling&lt;/td>
+&lt;td>计算最优扩展&lt;/td>
+&lt;td>优化计算资源的使用&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Data-optimal scaling&lt;/td>
+&lt;td>数据最优扩展&lt;/td>
+&lt;td>优化数据使用的扩展&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Encoder-decoder architecture&lt;/td>
+&lt;td>编码解码器架构&lt;/td>
+&lt;td>某些 LLM 的架构&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Auto-regressive model&lt;/td>
+&lt;td>自回归模型&lt;/td>
+&lt;td>生成文本的模型类型&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Bidirectional model&lt;/td>
+&lt;td>双向模型&lt;/td>
+&lt;td>考虑前后文的模型&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Self-supervision&lt;/td>
+&lt;td>自监督&lt;/td>
+&lt;td>无需标签的训练方法&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Unsupervised learning&lt;/td>
+&lt;td>无监督学习&lt;/td>
+&lt;td>无标签数据的学习&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Supervised learning&lt;/td>
+&lt;td>监督学习&lt;/td>
+&lt;td>有标签数据的学习&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item></channel></rss>

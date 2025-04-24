@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>SQL注入 on Yellster - Blog</title><link>https://blog.yellster.top/categories/sql%E6%B3%A8%E5%85%A5/</link><description>Recent content in SQL注入 on Yellster - Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>xyp_selune@163.com (Yellster)</managingEditor><webMaster>xyp_selune@163.com (Yellster)</webMaster><lastBuildDate>Sun, 07 Apr 2024 14:48:30 +0800</lastBuildDate><atom:link href="https://blog.yellster.top/categories/sql%E6%B3%A8%E5%85%A5/index.xml" rel="self" type="application/rss+xml"/><item><title>Web攻击之 SQL注入</title><link>https://blog.yellster.top/p/web-attack-sql-injection/</link><pubDate>Sun, 07 Apr 2024 14:48:30 +0800</pubDate><author>xyp_selune@163.com (Yellster)</author><guid>https://blog.yellster.top/p/web-attack-sql-injection/</guid><description>&lt;h2 id="sql-注入是什么">SQL 注入是什么？
+&lt;/h2>&lt;blockquote>
+&lt;p>SQL 注入（SQL Injection）是一种攻击方式，攻击者通过“拼接用户输入”和数据库语句，让服务器执行恶意 SQL 命令，进而&lt;strong>读取、修改、删除数据，甚至控制数据库主机&lt;/strong>。&lt;/p>&lt;/blockquote>
+&lt;h2 id="sql-注入是怎么产生的">SQL 注入是怎么产生的？
+&lt;/h2>&lt;blockquote>
+&lt;p>本质：&lt;strong>用户输入参与了 SQL 拼接，且没有做安全处理。&lt;/strong>&lt;/p>&lt;/blockquote>
+&lt;p>比如你写了这样的代码：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-sql" data-lang="sql">&lt;span class="line">&lt;span class="cl">&lt;span class="k">SELECT&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">FROM&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">users&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">WHERE&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">username&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;admin&amp;#39;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">AND&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">password&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;123456&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>用户在登录框输入：&lt;/p>
+&lt;ul>
+&lt;li>用户名：&lt;code>admin' --&lt;/code>&lt;/li>
+&lt;li>密码：（随便填）&lt;/li>
+&lt;/ul>
+&lt;p>结果 SQL 变成了：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-sql" data-lang="sql">&lt;span class="line">&lt;span class="cl">&lt;span class="k">SELECT&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">FROM&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">users&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">WHERE&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">username&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;admin&amp;#39;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">--&amp;#39; AND password = &amp;#39;xxx&amp;#39;;
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;code>--&lt;/code> 是 SQL 中的注释符，后面的部分被忽略，攻击者绕过了密码验证，&lt;strong>成功登录后台&lt;/strong>！&lt;/p>
+&lt;h2 id="sql-注入能造成什么危害">SQL 注入能造成什么危害？
+&lt;/h2>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>危害类别&lt;/th>
+&lt;th>具体描述&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>登录绕过&lt;/td>
+&lt;td>修改 SQL 语句逻辑，&lt;strong>无需密码直接登录账号&lt;/strong>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>数据泄露&lt;/td>
+&lt;td>&lt;code>UNION SELECT&lt;/code> 等方式读取敏感数据（账号、密码、银行卡）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>数据篡改&lt;/td>
+&lt;td>执行 &lt;code>UPDATE&lt;/code>、&lt;code>DELETE&lt;/code> 操作，&lt;strong>删库跑路&lt;/strong>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>写入后门&lt;/td>
+&lt;td>某些情况下配合文件写入，&lt;strong>写入 Webshell&lt;/strong>，反弹命令行&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>拓展攻击&lt;/td>
+&lt;td>通过数据库获取服务器权限，进一步横向移动攻击其他系统&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="如何防御-sql-注入核心方法">如何防御 SQL 注入？（核心方法）
+&lt;/h2>&lt;h3 id="使用-预编译语句prepared-statement">使用 &lt;strong>预编译语句（Prepared Statement）&lt;/strong>
+&lt;/h3>&lt;blockquote>
+&lt;p>&lt;strong>千万别直接拼接字符串！&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>千万别直接拼接字符串！&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>千万别直接拼接字符串！&lt;/strong>&lt;/p>&lt;/blockquote>
+&lt;p>&lt;strong>错误写法（易被注入）：&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">sql&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;SELECT * FROM users WHERE username = &amp;#39;&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">user&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;&amp;#39;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;strong>正确写法（参数绑定，防注入）：&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">cursor&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">execute&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;SELECT * FROM users WHERE username = &lt;/span>&lt;span class="si">%s&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">user&lt;/span>&lt;span class="p">,))&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>各种语言通用写法推荐使用：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>语言&lt;/th>
+&lt;th>推荐库&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>PHP&lt;/td>
+&lt;td>PDO + bindParam&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Python&lt;/td>
+&lt;td>&lt;code>cursor.execute(sql, param)&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Java&lt;/td>
+&lt;td>&lt;code>PreparedStatement&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Node.js&lt;/td>
+&lt;td>&lt;code>mysql.format()&lt;/code>、ORM&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="输入校验--白名单限制">输入校验 + 白名单限制
+&lt;/h3>&lt;ul>
+&lt;li>只允许合法字符（如用户名只能是字母、数字）&lt;/li>
+&lt;li>限制字段长度、格式（如手机号必须 11 位）&lt;/li>
+&lt;/ul>
+&lt;h3 id="最小权限原则">最小权限原则
+&lt;/h3>&lt;ul>
+&lt;li>数据库账号只给必要权限&lt;/li>
+&lt;li>不要用 &lt;code>root&lt;/code> 账户连接数据库！&lt;/li>
+&lt;/ul>
+&lt;h3 id="错误信息不暴露">错误信息不暴露
+&lt;/h3>&lt;ul>
+&lt;li>SQL 报错不能直接显示给用户（容易泄露表名、字段名）&lt;/li>
+&lt;li>使用统一的错误提示页面&lt;/li>
+&lt;/ul>
+&lt;h3 id="使用-orm-框架但要小心">使用 ORM 框架（但要小心）
+&lt;/h3>&lt;p>ORM（如 Django ORM、Hibernate）默认防注入，但：&lt;/p>
+&lt;ul>
+&lt;li>仍可能因原生 SQL 被误用而注入&lt;/li>
+&lt;li>ORM 的 &lt;code>extra()&lt;/code> / &lt;code>raw()&lt;/code> / &lt;code>execute()&lt;/code> 等接口使用时要小心&lt;/li>
+&lt;/ul>
+&lt;h3 id="wafips-网络层防御">WAF/IPS 网络层防御
+&lt;/h3>&lt;ul>
+&lt;li>使用 Web 应用防火墙拦截注入关键词&lt;/li>
+&lt;li>配合日志报警、验证码限制等方式增强防御深度&lt;/li>
+&lt;/ul>
+&lt;h2 id="总结一句话">总结一句话
+&lt;/h2>&lt;blockquote>
+&lt;p>&lt;strong>SQL 注入之所以可怕，是因为开发者信了用户的“输入”，数据库却把它当“命令”。&lt;/strong>&lt;/p>&lt;/blockquote></description></item></channel></rss>

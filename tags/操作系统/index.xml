@@ -1,0 +1,1064 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>操作系统 on Yellster - Blog</title><link>https://blog.yellster.top/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</link><description>Recent content in 操作系统 on Yellster - Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>xyp_selune@163.com (Yellster)</managingEditor><webMaster>xyp_selune@163.com (Yellster)</webMaster><lastBuildDate>Fri, 11 Apr 2025 13:38:57 +0800</lastBuildDate><atom:link href="https://blog.yellster.top/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/index.xml" rel="self" type="application/rss+xml"/><item><title>进程与线程</title><link>https://blog.yellster.top/p/process-thread/</link><pubDate>Fri, 11 Apr 2025 13:38:57 +0800</pubDate><author>xyp_selune@163.com (Yellster)</author><guid>https://blog.yellster.top/p/process-thread/</guid><description>&lt;img src="https://blog.yellster.top/p/process-thread/process-thread.webp" alt="Featured image of post 进程与线程" />&lt;p>在现代操作系统中，&lt;strong>进程&lt;/strong>、&lt;strong>线程&lt;/strong>和&lt;strong>虚拟地址&lt;/strong>是支撑高效执行、内存管理与资源隔离的三大核心概念。它们相互配合，共同保证系统的稳定性、安全性与并发性能。&lt;/p>
+&lt;h2 id="进程资源隔离与调度的基本单位">进程：资源隔离与调度的基本单位
+&lt;/h2>&lt;h3 id="概念">概念
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>进程&lt;/strong>：正在运行的程序实例，拥有独立的地址空间、数据段、堆与栈，以及各类系统资源（文件描述符、信号、IPC 对象等）。&lt;/li>
+&lt;/ul>
+&lt;h3 id="创建与执行">创建与执行
+&lt;/h3>&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>创建&lt;/strong>：Linux 中通过 &lt;code>fork()&lt;/code> 复制父进程，再用 &lt;code>exec()&lt;/code> 系列函数加载新程序。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>fork()——复制当前进程&lt;/strong>&lt;/p>
+&lt;p>父进程调用 &lt;code>fork()&lt;/code>，内核在后台复制出一个“子进程”，这个子进程和父进程几乎一模一样（地址空间、打开的文件描述符等都拷贝或共享）。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>execve()（或其它 exec* 系列函数）——在子进程里加载新程序&lt;/strong>&lt;/p>
+&lt;p>子进程中立即调用 &lt;code>execve(&amp;quot;/path/to/newprog&amp;quot;, argv, envp)&lt;/code>，内核就会丢弃掉原来的地址空间，把可执行文件 &lt;code>/path/to/newprog&lt;/code> 映射进来，初始化全新的代码段、数据段、堆栈，真正运行“一个全新的进程镜像”。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>调度&lt;/strong>：内核调度器（scheduler）负责分配 CPU 时间片，维护多任务并发运行。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="进程间通信ipc">进程间通信（IPC）
+&lt;/h3>&lt;p>由于进程地址空间独立，IPC 机制尤为重要：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>方式&lt;/th>
+&lt;th>场景&lt;/th>
+&lt;th>优势&lt;/th>
+&lt;th>注意点&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>管道（Pipe）&lt;/td>
+&lt;td>父子进程&lt;/td>
+&lt;td>简单、快速&lt;/td>
+&lt;td>仅限亲缘进程，单向&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>命名管道&lt;/td>
+&lt;td>任意本地进程&lt;/td>
+&lt;td>双向、可见文件系统&lt;/td>
+&lt;td>性能略低&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>消息队列&lt;/td>
+&lt;td>异步通信&lt;/td>
+&lt;td>支持优先级、可靠传输&lt;/td>
+&lt;td>大量小消息时开销增大&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>共享内存&lt;/td>
+&lt;td>大块数据交换&lt;/td>
+&lt;td>&lt;a class="link" href="https://blog.yellster.top/p/zero-copy/" >零拷贝&lt;/a>、高吞吐&lt;/td>
+&lt;td>需同步机制（锁、信号量）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>套接字（Socket）&lt;/td>
+&lt;td>本地／跨网络进程&lt;/td>
+&lt;td>灵活、多协议&lt;/td>
+&lt;td>网络开销相对较大&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>信号（Signal）&lt;/td>
+&lt;td>异步通知&lt;/td>
+&lt;td>轻量级、实时性好&lt;/td>
+&lt;td>数据传输能力有限&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;blockquote>
+&lt;p>&lt;strong>IPC（进程间通信，Inter-Process Communication）&lt;/strong> 是指在操作系统中，不同进程之间为交换数据或进行同步而提供的一系列机制。&lt;/p>
+&lt;p>由于操作系统给每个进程分配了独立的地址空间，直接读写对方内存是不被允许的，IPC 就是为了解决“&lt;strong>进程如何安全、高效地互相协作&lt;/strong>”而产生的。&lt;/p>&lt;/blockquote>
+&lt;h2 id="线程轻量级执行流与并行处理">线程：轻量级执行流与并行处理
+&lt;/h2>&lt;h3 id="概念-1">概念
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>线程&lt;/strong>：依附于进程的执行单元，共享进程的地址空间和大部分资源，但拥有各自的寄存器上下文和栈。&lt;/li>
+&lt;/ul>
+&lt;h3 id="创建与管理">创建与管理
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>Linux 实现&lt;/strong>：基于 &lt;code>clone()&lt;/code> 系统调用；POSIX 线程库（pthread）提供了更友好的 API。&lt;/li>
+&lt;li>&lt;strong>切换开销&lt;/strong>：比进程轻量，适用于高并发场景。&lt;/li>
+&lt;/ul>
+&lt;h3 id="并发挑战">并发挑战
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>竞态条件&lt;/strong>：无同步的并发访问可能导致数据不一致。&lt;/li>
+&lt;li>&lt;strong>死锁&lt;/strong>：多线程间相互等待锁时出现永久阻塞。&lt;/li>
+&lt;li>&lt;strong>活锁与饥饿&lt;/strong>：线程过度谦让或被长期剥夺执行机会。&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>&lt;strong>示例&lt;/strong>（Rust 风格伪代码）：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-rust" data-lang="rust">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">counter&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Arc&lt;/span>::&lt;span class="n">new&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Mutex&lt;/span>::&lt;span class="n">new&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">));&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">handles&lt;/span>: &lt;span class="nb">Vec&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">_&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="o">..&lt;/span>&lt;span class="mi">10&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">map&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="n">_&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Arc&lt;/span>::&lt;span class="n">clone&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="n">counter&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">thread&lt;/span>::&lt;span class="n">spawn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">move&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">||&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">mut&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">num&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">lock&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">unwrap&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="n">num&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">})&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}).&lt;/span>&lt;span class="n">collect&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">h&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">in&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">handles&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">h&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">join&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">unwrap&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="fm">println!&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Result: &lt;/span>&lt;span class="si">{}&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="n">counter&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">lock&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">unwrap&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/blockquote>
+&lt;h2 id="虚拟地址抽象内存与安全保护">虚拟地址：抽象内存与安全保护
+&lt;/h2>&lt;h3 id="概念-2">概念
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>虚拟地址&lt;/strong>：操作系统为每个进程提供的连续逻辑地址空间，与物理内存无直接一一映射。&lt;/li>
+&lt;/ul>
+&lt;h3 id="管理机制">管理机制
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>分页（Paging）&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>页大小&lt;/strong>：通常 4 KB，也有大页（2 MB/1 GB）。&lt;/li>
+&lt;li>&lt;strong>多级页表&lt;/strong>：如 x86_64 的 4 级页表，减少内存占用。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>地址转换&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-text" data-lang="text">&lt;span class="line">&lt;span class="cl">虚拟地址 = [页目录索引][页表索引][页内偏移]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">物理地址 = 页框号 + 偏移
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>通过 MMU 与 TLB 快速完成转换。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>保护与优化&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>访问权限&lt;/strong>：读/写/执行标志。&lt;/li>
+&lt;li>&lt;strong>用户/内核隔离&lt;/strong>：防止越权访问。&lt;/li>
+&lt;li>&lt;strong>写时复制（COW）&lt;/strong>：延迟复制，降低 fork 开销。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="能当做-ipc-吗">能当做 IPC 吗？
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>虚拟地址本身不共享&lt;/strong>，不能直接跨进程使用。&lt;/li>
+&lt;li>&lt;strong>共享内存&lt;/strong> 或 &lt;strong>mmap(MAP_SHARED)&lt;/strong> 是利用虚拟地址“映射”同一段物理页到不同进程，从而实现高效的 IPC。&lt;/li>
+&lt;li>你只需要在各自进程里拿到映射后自己的虚拟指针，就能像访问本地内存一样进行读写。&lt;/li>
+&lt;/ul>
+&lt;h2 id="协程更轻量的用户态并发">协程：更轻量的用户态并发
+&lt;/h2>&lt;h3 id="概念-3">概念
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>协程（Coroutine）&lt;/strong>：用户态的轻量级执行单元，又称“微线程”或“纤程”。它在单线程内通过显式的调度点（yield）实现多任务切换，无需内核参与。&lt;/li>
+&lt;/ul>
+&lt;h3 id="特点">特点
+&lt;/h3>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>特性&lt;/th>
+&lt;th>线程&lt;/th>
+&lt;th>协程&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>调度&lt;/td>
+&lt;td>内核调度（抢占式）&lt;/td>
+&lt;td>用户态调度（协作式）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>上下文切换开销&lt;/td>
+&lt;td>高（进入内核，保存/恢复寄存器、内核栈）&lt;/td>
+&lt;td>低（仅保存/恢复少量寄存器和用户栈指针）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>通信&lt;/td>
+&lt;td>共享内存需锁、IPC&lt;/td>
+&lt;td>函数调用/Channel/队列 等&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>并发规模&lt;/td>
+&lt;td>受限于内核线程数&lt;/td>
+&lt;td>数万乃至数十万轻松支持&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="调度模型">调度模型
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>协作式&lt;/strong>：运行到显式 &lt;code>yield&lt;/code> 或 &lt;code>await&lt;/code> 才切换，开发者可精确控制切换点。&lt;/li>
+&lt;li>&lt;strong>预emptive（部分语言支持）&lt;/strong>：语言运行时定期打断协程，但大多数主流实现（如 Python、Go）采用协作式。&lt;/li>
+&lt;/ul>
+&lt;h3 id="常见实现">常见实现
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>Go&lt;/strong>：goroutine + M:N 调度，M 代表系统线程，N 代表用户协程，由 runtime 自动分配。&lt;/li>
+&lt;li>&lt;strong>Python&lt;/strong>：&lt;code>async def&lt;/code> + &lt;code>await&lt;/code>，基于事件循环（&lt;code>asyncio&lt;/code>）或第三方库（如 Trio、Curio）。&lt;/li>
+&lt;li>&lt;strong>Rust&lt;/strong>：&lt;code>async/await&lt;/code> + Futures + executor（如 Tokio、async-std），通过状态机驱动。&lt;/li>
+&lt;li>&lt;strong>JavaScript&lt;/strong>：基于事件循环的 Promise + &lt;code>async/await&lt;/code>，单线程协程模型。&lt;/li>
+&lt;/ul>
+&lt;h3 id="应用场景">应用场景
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>高并发 I/O&lt;/strong>：Web 服务器、爬虫、网络代理等，常用事件驱动 + 协程模型实现百万级并发。&lt;/li>
+&lt;li>&lt;strong>异步任务流&lt;/strong>：管道化处理、大量小任务的并行调度。&lt;/li>
+&lt;li>&lt;strong>可控并发&lt;/strong>：无需锁或细粒度锁，简化并发控制。&lt;/li>
+&lt;/ul>
+&lt;h2 id="四者对比与协同">四者对比与协同
+&lt;/h2>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>模型&lt;/th>
+&lt;th>调度方式&lt;/th>
+&lt;th>切换开销&lt;/th>
+&lt;th>共享资源&lt;/th>
+&lt;th>适用场景&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>进程&lt;/td>
+&lt;td>内核（抢占）&lt;/td>
+&lt;td>最大&lt;/td>
+&lt;td>无（需 IPC）&lt;/td>
+&lt;td>资源隔离、强隔离需求&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>线程&lt;/td>
+&lt;td>内核（抢占）&lt;/td>
+&lt;td>较大&lt;/td>
+&lt;td>共享进程资源&lt;/td>
+&lt;td>CPU 并行、I/O 并发&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>协程&lt;/td>
+&lt;td>用户（协作）&lt;/td>
+&lt;td>最小&lt;/td>
+&lt;td>共享线程资源&lt;/td>
+&lt;td>海量并发 I/O、异步流程&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>虚拟地址&lt;/td>
+&lt;td>——&lt;/td>
+&lt;td>——&lt;/td>
+&lt;td>——&lt;/td>
+&lt;td>为进程/线程/协程提供统一内存抽象&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;ul>
+&lt;li>&lt;strong>进程&lt;/strong>： &lt;strong>是资源分配的基本单位&lt;/strong>，每个进程都有独立的内存空间（代码段、数据段、堆栈等），提供最强隔离。&lt;/li>
+&lt;li>&lt;strong>线程&lt;/strong>： &lt;strong>是 CPU 调度的基本单位&lt;/strong>，属于进程，一个进程可以包含多个线程。共享进程的内存空间和资源（文件句柄、数据段等）在同一地址空间内并行。&lt;/li>
+&lt;li>&lt;strong>协程&lt;/strong>： 在单线程内更高效地调度。&lt;/li>
+&lt;li>&lt;strong>虚拟地址&lt;/strong>： 是上述模型的基础，屏蔽物理内存复杂性并提供保护。&lt;/li>
+&lt;/ul>
+&lt;h3 id="应用场景选型">应用场景选型
+&lt;/h3>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>场景&lt;/th>
+&lt;th>建议方案&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>资源隔离优先&lt;/td>
+&lt;td>对安全或稳定性要求极高的组件，首选进程&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>并行计算&lt;/td>
+&lt;td>CPU 密集任务可用多进程或多线程&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>高并发 I/O&lt;/td>
+&lt;td>首选协程框架，结合事件驱动（如 epoll、kqueue）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>混合模式&lt;/td>
+&lt;td>Web 服务常用 “多进程 + 协程” 的组合：进程隔离，协程高并发&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="总结">总结
+&lt;/h2>&lt;ul>
+&lt;li>&lt;strong>进程&lt;/strong>、&lt;strong>线程&lt;/strong> 和 &lt;strong>协程&lt;/strong> 是三种层次不同的并发单元，各自有取舍。&lt;/li>
+&lt;li>&lt;strong>虚拟地址&lt;/strong> 为它们提供了统一、隔离且安全的内存视图。&lt;/li>
+&lt;li>在实际系统设计中，合理组合使用，才能兼顾隔离性、并发性与性能，打造高性能、高可靠的应用架构。&lt;/li>
+&lt;/ul>
+&lt;h2 id="进程调度算法">进程调度算法
+&lt;/h2>&lt;h3 id="非抢占式调度">非抢占式调度
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>先来先服务（FCFS）&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>原理&lt;/strong>：按进程到达就绪队列的先后顺序依次调度，类似队列排队。&lt;/li>
+&lt;li>&lt;strong>优点&lt;/strong>：简单易实现；无饥饿。&lt;/li>
+&lt;li>&lt;strong>缺点&lt;/strong>：平均等待时间不一定最短，易出现“短作业后面跟长作业”拖慢整体效率。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>短作业优先（SJF）／最短剩余时间优先（SRTF）&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>SJF（非抢占）&lt;/strong>：每次选择执行时间最短的作业；&lt;/li>
+&lt;li>&lt;strong>SRTF（抢占）&lt;/strong>：新作业到达时，如果其所需时间比当前剩余时间短，则抢占。&lt;/li>
+&lt;li>&lt;strong>优点&lt;/strong>：能最小化平均等待时间；&lt;/li>
+&lt;li>&lt;strong>缺点&lt;/strong>：需要准确估计执行时间；可能导致长作业“饥饿”。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>优先级调度（Priority）&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>原理&lt;/strong>：为每个进程分配优先级，优先级高的先执行；可抢占或非抢占。&lt;/li>
+&lt;li>&lt;strong>优点&lt;/strong>：满足关键任务优先执行；&lt;/li>
+&lt;li>&lt;strong>缺点&lt;/strong>：低优先级可能长时间得不到调度（饥饿），需用“优先级老化”机制解决。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="抢占式调度">抢占式调度
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>时间片轮转（Round Robin，RR）&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>原理&lt;/strong>：给每个进程分配固定长度的时间片，时间片用完即切换到下一个进程，循环往复。&lt;/li>
+&lt;li>&lt;strong>优点&lt;/strong>：响应时间可控，适合交互式系统；无进程饥饿。&lt;/li>
+&lt;li>&lt;strong>缺点&lt;/strong>：时间片大小需平衡，过大接近 FCFS，过小切换开销大。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>多级队列调度（Multilevel Queue）&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>原理&lt;/strong>：将进程按类型（交互式、批处理、系统进程等）分到多个队列，不同队列使用不同算法和优先级。&lt;/li>
+&lt;li>&lt;strong>优点&lt;/strong>：可针对性地优化不同类型作业；&lt;/li>
+&lt;li>&lt;strong>缺点&lt;/strong>：队列间切换策略固定，灵活性较差。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>多级反馈队列（Multilevel Feedback Queue）&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>原理&lt;/strong>：允许进程在不同优先级队列间动态升降，根据其执行特性（CPU 密集或 I/O 密集）调整优先级。&lt;/li>
+&lt;li>&lt;strong>优点&lt;/strong>：兼顾短作业和长作业，能自动提升响应性；&lt;/li>
+&lt;li>&lt;strong>缺点&lt;/strong>：参数（队列数、时间片长度、反馈规则）较多，需要调优。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="现代与实时调度">现代与实时调度
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>最早截止时间优先（EDF, Earliest Deadline First）&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>应用&lt;/strong>：实时系统&lt;/li>
+&lt;li>&lt;strong>原理&lt;/strong>：总是选择截止时间最早的任务执行，可抢占。&lt;/li>
+&lt;li>&lt;strong>优点&lt;/strong>：理论上能在系统总利用率 ≤100% 时保证所有任务准时完成；&lt;/li>
+&lt;li>&lt;strong>缺点&lt;/strong>：需要精确的任务截止时间。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>率先最小周期优先（RMS, Rate Monotonic Scheduling）&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>应用&lt;/strong>：实时系统，周期性任务&lt;/li>
+&lt;li>&lt;strong>原理&lt;/strong>：周期短（率高）的任务优先级高；&lt;/li>
+&lt;li>&lt;strong>优点&lt;/strong>：简单固定优先级；&lt;/li>
+&lt;li>&lt;strong>缺点&lt;/strong>：在高利用率下不能保证可调度（理论上利用率上限 ≈69%）。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Linux 完全公平调度器（CFS, Completely Fair Scheduler）&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>应用&lt;/strong>：通用 Linux 桌面/服务器&lt;/li>
+&lt;li>&lt;strong>原理&lt;/strong>：用虚拟运行时间（vruntime）衡量每个任务已经“拿过”的 CPU 时间，优先选择 vruntime 最小者执行。&lt;/li>
+&lt;li>&lt;strong>优点&lt;/strong>：可以在多任务间实现近似理想的公平；&lt;/li>
+&lt;li>&lt;strong>缺点&lt;/strong>：算法复杂度高于传统调度，切换开销略大。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="选择与权衡">选择与权衡
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>交互式系统&lt;/strong>（桌面应用、Web 服务器）：优先 RR、Multilevel Feedback Queue、CFS&lt;/li>
+&lt;li>&lt;strong>批处理系统&lt;/strong>（后台任务、科学计算）：可选 SJF/SRTF、Multilevel Queue&lt;/li>
+&lt;li>&lt;strong>实时系统&lt;/strong>（控制、嵌入式）：EDF、RMS&lt;/li>
+&lt;li>&lt;strong>混合场景&lt;/strong>：多级反馈队列 + 结合优先级老化保证低优先级可执行&lt;/li>
+&lt;/ul>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>算法&lt;/th>
+&lt;th>抢占&lt;/th>
+&lt;th>优点&lt;/th>
+&lt;th>缺点&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>FCFS&lt;/td>
+&lt;td>否&lt;/td>
+&lt;td>简单易实现，无饥饿&lt;/td>
+&lt;td>平均等待时间高&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>SJF / SRTF&lt;/td>
+&lt;td>可选&lt;/td>
+&lt;td>最小化平均等待时间&lt;/td>
+&lt;td>需估计运行时长；长期作业易饥饿&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Priority&lt;/td>
+&lt;td>可选&lt;/td>
+&lt;td>可满足关键任务优先&lt;/td>
+&lt;td>需防止低优先级饥饿&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Round Robin&lt;/td>
+&lt;td>是&lt;/td>
+&lt;td>响应时间可控，无饥饿&lt;/td>
+&lt;td>时间片选取需平衡；频繁切换开销大&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Multilevel Queue&lt;/td>
+&lt;td>可选&lt;/td>
+&lt;td>针对不同类型作业优化&lt;/td>
+&lt;td>队列间固化策略；灵活性差&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Multilevel Feedback&lt;/td>
+&lt;td>是&lt;/td>
+&lt;td>自适应调度，兼顾短/长作业&lt;/td>
+&lt;td>参数调优复杂&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>EDF / RMS（实时）&lt;/td>
+&lt;td>是&lt;/td>
+&lt;td>实时可调度保证&lt;/td>
+&lt;td>需准确的任务参数&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>CFS&lt;/td>
+&lt;td>是&lt;/td>
+&lt;td>理想公平，适合通用场景&lt;/td>
+&lt;td>实现复杂，切换开销略大&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item><item><title>零拷贝</title><link>https://blog.yellster.top/p/zero-copy/</link><pubDate>Sat, 21 Sep 2024 16:09:09 +0800</pubDate><author>xyp_selune@163.com (Yellster)</author><guid>https://blog.yellster.top/p/zero-copy/</guid><description>&lt;img src="https://blog.yellster.top/p/zero-copy/zero-copy.png" alt="Featured image of post 零拷贝" />&lt;p>&lt;strong>​零拷贝（Zero-Copy）&lt;/strong> 是一种操作系统级别的 I/O 优化技术，旨在减少或避免数据在内存中的多次拷贝，降低 CPU 占用率，提高数据传输效率，尤其适用于高并发、大吞吐量的场景，如网络通信、文件传输等。&lt;/p>
+&lt;h2 id="传统-io-的调用">传统 I/O 的调用
+&lt;/h2>&lt;p>传统 I/O 操作中，数据需要从磁盘文件拷贝到内核空间，再从内核空间拷贝到用户空间，然后再拷贝到 &lt;code>Socket Buffer&lt;/code> 中，再拷贝到网卡设备。&lt;/p>
+&lt;p>&lt;img src="https://blog.yellster.top/p/zero-copy/%E4%BC%A0%E7%BB%9F%E6%8B%B7%E8%B4%9D.png"
+width="1080"
+height="607"
+srcset="https://blog.yellster.top/p/zero-copy/%E4%BC%A0%E7%BB%9F%E6%8B%B7%E8%B4%9D_hu_f7b29adf1e79d7de.png 480w, https://blog.yellster.top/p/zero-copy/%E4%BC%A0%E7%BB%9F%E6%8B%B7%E8%B4%9D_hu_d56501e2b550c485.png 1024w"
+loading="lazy"
+alt="传统拷贝"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="427px"
+>&lt;/p>
+&lt;p>传统的 I/O 操作过程中，涉及到 &lt;strong>4 次上下文切换&lt;/strong>（用户态和内核态的上下文切换）和 &lt;strong>4 次数据拷贝&lt;/strong>（2 次 CPU 拷贝、2 次 DMA 拷贝）：&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>上下文从用户态切换到内核态&lt;/strong>：应用程序进程调用 &lt;code>read&lt;/code> ，发起 &lt;code>I/O 调用&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>DMA 拷贝&lt;/strong>：&lt;code>DMA 控制器&lt;/code> 将数据从 &lt;code>磁盘文件（硬件设备）&lt;/code> 拷贝到 &lt;code>内核缓冲区（内核空间）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>上下文从内核态切换到用户态&lt;/strong>：&lt;code>read&lt;/code> 调用返回；&lt;/li>
+&lt;li>&lt;strong>CPU 拷贝&lt;/strong>：&lt;code>CPU&lt;/code> 将数据从 &lt;code>内核缓冲区（内核空间）&lt;/code> 拷贝到 &lt;code>用户缓冲区（用户空间）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>上下文从用户态切换到内核态&lt;/strong>：应用程序进程调用 &lt;code>write&lt;/code> ，发起 &lt;code>I/O 调用&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>CPU 拷贝&lt;/strong>：&lt;code>CPU&lt;/code> 将数据从 &lt;code>用户缓冲区（用户空间）&lt;/code> 拷贝到 &lt;code>Socket Buffer（内核空间）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>DMA 拷贝&lt;/strong>：&lt;code>DMA 控制器&lt;/code> 将数据从 &lt;code>Socket Buffer（内核空间）&lt;/code> 拷贝到 &lt;code>网卡设备（硬件设备）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>上下文从内核态切换到用户态&lt;/strong>：&lt;code>wirte&lt;/code> 调用返回。&lt;/li>
+&lt;/ol>
+&lt;h2 id="零拷贝">零拷贝
+&lt;/h2>&lt;p>相比 传统 I/O 调用，零拷贝通过直接拷贝数据，避免了多次拷贝操作。&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>零拷贝并不是没有拷贝数据，而是减少用户态/内核态的切换次数以及CPU拷贝的次数&lt;/strong>。&lt;/p>&lt;/blockquote>
+&lt;h2 id="零拷贝的实现方式">零拷贝的实现方式
+&lt;/h2>&lt;h3 id="mmap--write">mmap + write
+&lt;/h3>&lt;ol>
+&lt;li>&lt;strong>上下文从用户态切换到内核态&lt;/strong>：应用程序进程发起 &lt;code>mmap&lt;/code> 调用；&lt;/li>
+&lt;li>&lt;strong>DMA 拷贝&lt;/strong>：&lt;code>DMA 控制器&lt;/code> 将数据从 &lt;code>磁盘文件（硬件设备）&lt;/code> 拷贝到 &lt;code>内核缓冲区（内核空间）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>上下文从内核态切换到用户态&lt;/strong>：&lt;code>内核缓冲区（内核空间）&lt;/code> 地址和 &lt;code>用户缓冲区（用户空间）&lt;/code>地址映射，内核缓冲区和应用缓冲区共享，&lt;code>mmap&lt;/code> 调用返回；&lt;/li>
+&lt;li>&lt;strong>上下文从用户态切换到内核态&lt;/strong>：应用程序进程调用 &lt;code>write&lt;/code> ，发起 &lt;code>I/O 调用&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>CPU 拷贝&lt;/strong>：&lt;code>CPU&lt;/code> 将数据从 &lt;code>用户缓冲区（用户空间）&lt;/code> 拷贝到 &lt;code>Socket Buffer（内核空间）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>DMA 拷贝&lt;/strong>：&lt;code>DMA 控制器&lt;/code> 根据 &lt;strong>文件描述符信息&lt;/strong> 直接把数据从 &lt;code>内核缓冲区（内核空间）&lt;/code> 拷贝到 &lt;code>网卡设备（硬件设备）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>上下文从内核态切换到用户态&lt;/strong>：&lt;code>write&lt;/code> 调用返回。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://blog.yellster.top/p/zero-copy/mmap.png"
+width="2140"
+height="1274"
+srcset="https://blog.yellster.top/p/zero-copy/mmap_hu_5a941f8777696c89.png 480w, https://blog.yellster.top/p/zero-copy/mmap_hu_34d26fd28530ab6.png 1024w"
+loading="lazy"
+alt="mmap &amp;#43; write"
+class="gallery-image"
+data-flex-grow="167"
+data-flex-basis="403px"
+>&lt;/p>
+&lt;p>mmap + write 调用涉及到 &lt;strong>4 次上下文切换&lt;/strong> 和 &lt;strong>3 次数据拷贝&lt;/strong>（1 次 CPU 拷贝、2 次 DMA 拷贝）。&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;code>mmap&lt;/code> 是将读缓冲区的地址和用户缓冲区的地址进行映射，内核缓冲区和应用缓冲区共享，所以节省了一次CPU拷贝，并且用户进程内存是&lt;strong>虚拟的&lt;/strong>，只是&lt;strong>映射到内核的读缓冲区&lt;/strong>，可以节省一半的内存空间。&lt;/p>&lt;/blockquote>
+&lt;h3 id="sendfile">sendfile
+&lt;/h3>&lt;p>sendfile表示在两个文件描述符之间传输数据，它是在 &lt;strong>操作系统内核&lt;/strong> 中操作的，&lt;strong>避免了数据从内核缓冲区和用户缓冲区之间的拷贝操作&lt;/strong>，因此可以使用它来实现零拷贝。&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>上下文从用户态切换到内核态&lt;/strong>：应用程序进程发起 &lt;code>sendfile&lt;/code> 调用；&lt;/li>
+&lt;li>&lt;strong>DMA 拷贝&lt;/strong>：&lt;code>DMA 控制器&lt;/code> 将数据从 &lt;code>磁盘文件（硬件设备）&lt;/code> 拷贝到 &lt;code>内核缓冲区（内核空间）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>CPU 拷贝&lt;/strong>：&lt;code>CPU&lt;/code> 将数据从 &lt;code>内核缓冲区（内核空间）&lt;/code> 拷贝到 &lt;code>Socket Buffer（内核空间）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>DMA 拷贝&lt;/strong>：&lt;code>DMA 控制器&lt;/code> 将数据从 &lt;code>Socket Buffer（内核空间）&lt;/code> 拷贝到 &lt;code>网卡设备（硬件设备）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>上下文从内核态切换到用户态&lt;/strong>：&lt;code>sendfile&lt;/code> 调用返回。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://blog.yellster.top/p/zero-copy/sendfile.png"
+width="1080"
+height="602"
+srcset="https://blog.yellster.top/p/zero-copy/sendfile_hu_e7b239b45142fd65.png 480w, https://blog.yellster.top/p/zero-copy/sendfile_hu_9c62413f8190d489.png 1024w"
+loading="lazy"
+alt="sendfile"
+class="gallery-image"
+data-flex-grow="179"
+data-flex-basis="430px"
+>&lt;/p>
+&lt;p>相比传统 I/O 调用，&lt;code>sendfile&lt;/code> 调用涉及到 &lt;strong>2 次上下文切换&lt;/strong> 和 &lt;strong>3 次数据拷贝&lt;/strong>（1 次 CPU 拷贝、2 次 DMA 拷贝）。&lt;/p>
+&lt;h3 id="sendfile--sg-dma">sendfile + SG-DMA
+&lt;/h3>&lt;blockquote>
+&lt;p>Linux 2.4+版本提出。&lt;/p>&lt;/blockquote>
+&lt;ol>
+&lt;li>&lt;strong>上下文从用户态切换到内核态&lt;/strong>：应用程序进程发起 &lt;code>sendfile&lt;/code> 调用；&lt;/li>
+&lt;li>&lt;strong>DMA 拷贝&lt;/strong>：&lt;code>DMA 控制器&lt;/code> 将数据从 &lt;code>磁盘文件（硬件设备）&lt;/code> 拷贝到 &lt;code>内核缓冲区（内核空间）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>只拷贝文件描述符信息&lt;/strong>：&lt;code>CPU&lt;/code> 将 &lt;code>内核缓冲区（内核空间）&lt;/code> 中的 &lt;strong>文件描述符信息&lt;/strong>（包括内核缓冲区的内存地址和偏移量） 拷贝到 &lt;code>Socket Buffer（内核空间）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>DMA 拷贝&lt;/strong>：&lt;code>DMA 控制器&lt;/code> 根据 &lt;strong>文件描述符信息&lt;/strong> 直接把数据从 &lt;code>内核缓冲区（内核空间）&lt;/code> 拷贝到 &lt;code>网卡设备（硬件设备）&lt;/code>；&lt;/li>
+&lt;li>&lt;strong>上下文从内核态切换到用户态&lt;/strong>：&lt;code>sendfile&lt;/code> 调用返回。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://blog.yellster.top/p/zero-copy/sendfile&amp;#43;SG-DMA.png"
+width="1080"
+height="606"
+srcset="https://blog.yellster.top/p/zero-copy/sendfile&amp;#43;SG-DMA_hu_7557d5dfc97a5e05.png 480w, https://blog.yellster.top/p/zero-copy/sendfile&amp;#43;SG-DMA_hu_3efc44873afcaced.png 1024w"
+loading="lazy"
+alt="sendfile &amp;#43; SG-DMA"
+class="gallery-image"
+data-flex-grow="178"
+data-flex-basis="427px"
+>&lt;/p>
+&lt;p>相比单独的 sendfile，&lt;code>sendfile + SG-DMA&lt;/code> 调用涉及到 &lt;strong>2 次上下文切换&lt;/strong> 和 &lt;strong>2 次数据拷贝&lt;/strong>（2 次 DMA 拷贝）。&lt;/p>
+&lt;blockquote>
+&lt;p>真正实现了 零拷贝，全程都没有通过CPU来搬运数据，所有的数据都是通过DMA来进行传输的。&lt;/p>&lt;/blockquote>
+&lt;h3 id="对比">对比
+&lt;/h3>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>方法&lt;/th>
+&lt;th>上下文切换&lt;/th>
+&lt;th>拷贝次数&lt;/th>
+&lt;th>CPU参与&lt;/th>
+&lt;th>适用场景&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>传统I/O&lt;/td>
+&lt;td>4次&lt;/td>
+&lt;td>4次&lt;/td>
+&lt;td>2次&lt;/td>
+&lt;td>通用场景（性能较低）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>mmap + write&lt;/td>
+&lt;td>4次&lt;/td>
+&lt;td>3次&lt;/td>
+&lt;td>1次&lt;/td>
+&lt;td>需用户态处理数据的场景&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>sendfile&lt;/td>
+&lt;td>2次&lt;/td>
+&lt;td>3次&lt;/td>
+&lt;td>1次&lt;/td>
+&lt;td>文件到网络的高性能传输&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>sendfile + SG-DMA&lt;/td>
+&lt;td>2次&lt;/td>
+&lt;td>2次&lt;/td>
+&lt;td>0次&lt;/td>
+&lt;td>文件到网络的高性能传输&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="扩展">扩展
+&lt;/h2>&lt;h3 id="内核空间和用户空间">内核空间和用户空间
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>内核空间&lt;/strong>：操作系统内核运行的内存区域，具有最高权限，可以直接访问硬件、内存管理、文件系统等底层资源。&lt;/li>
+&lt;li>&lt;strong>用户空间&lt;/strong>：应用程序运行的内存区域，具有较低权限，只能访问受限的资源，如自己的内存、文件等，必须通过 &lt;strong>系统调用（System Call）&lt;/strong> 请求内核资源。&lt;/li>
+&lt;/ul>
+&lt;h4 id="地址空间划分以-32-位系统4gb-为例">&lt;strong>地址空间划分（以 32 位系统、4GB 为例）：&lt;/strong>
+&lt;/h4>&lt;ul>
+&lt;li>&lt;strong>内核空间&lt;/strong>：0xC0000000 ~ 0xFFFFFFFF，约占 1GB，所有进程共享，用于存放内核代码、内核数据、设备驱动等。&lt;/li>
+&lt;li>&lt;strong>用户空间&lt;/strong>：0x00000000 ~ 0xBFFFFFFF，约占 3GB，每个进程独享，用于存放用户代码、用户数据、栈、堆等。&lt;/li>
+&lt;/ul>
+&lt;h4 id="隔离性">&lt;strong>隔离性&lt;/strong>
+&lt;/h4>&lt;ul>
+&lt;li>&lt;strong>安全性&lt;/strong>：防止用户程序误操作（如内存越界）导致系统崩溃。例如，用户态程序无法直接清空内存或配置硬件参数。&lt;/li>
+&lt;li>&lt;strong>稳定性&lt;/strong>：若用户程序崩溃（如空指针异常），仅影响自身用户空间，内核空间仍可正常运行，保障系统其他进程。&lt;/li>
+&lt;li>&lt;strong>资源管理&lt;/strong>：内核统一管理硬件资源（CPU、内存、I/O），避免用户程序直接竞争资源。&lt;/li>
+&lt;/ul>
+&lt;h3 id="内核态和用户态">内核态和用户态
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>内核态&lt;/strong>：操作系统内核运行的模式，具有最高权限，可直接访问硬件、内存管理、文件系统等底层资源。&lt;/li>
+&lt;li>&lt;strong>用户态&lt;/strong>：应用程序运行的模式，具有较低权限，只能访问受限的资源，如自己的内存、文件等，必须通过 &lt;strong>系统调用（System Call）&lt;/strong> 请求内核资源。&lt;/li>
+&lt;/ul>
+&lt;h4 id="如何切换">&lt;strong>如何切换？&lt;/strong>
+&lt;/h4>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;strong>场景&lt;/strong>&lt;/th>
+&lt;th>描述&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;strong>系统调用&lt;/strong>&lt;/td>
+&lt;td>用户程序主动请求内核服务（如&lt;code>write()&lt;/code>），通过&lt;code>int 0x80&lt;/code>指令触发切换。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>异常&lt;/strong>&lt;/td>
+&lt;td>CPU执行用户程序时发生错误（如缺页异常），强制切换到内核态处理。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>硬件中断&lt;/strong>&lt;/td>
+&lt;td>外设完成操作后（如磁盘I/O完成），中断信号触发切换。&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;strong>用户态 → 内核态&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>执行特权指令（如&lt;code>int 0x80&lt;/code>），CPU切换到Ring 0。&lt;/li>
+&lt;li>保存用户态现场（寄存器、用户栈指针）到内核栈。&lt;/li>
+&lt;li>执行内核代码（如系统调用处理程序）。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>内核态 → 用户态&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>内核代码执行完毕（如文件写入完成）。&lt;/li>
+&lt;li>恢复用户态现场（从内核栈加载寄存器、用户栈指针）。&lt;/li>
+&lt;li>通过&lt;code>sysret&lt;/code>指令切换回Ring 3，继续用户程序。&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>&lt;strong>示例&lt;/strong>：用户程序调用&lt;code>write()&lt;/code>写入文件时：&lt;/p>
+&lt;ol>
+&lt;li>用户态程序通过库函数触发系统调用。&lt;/li>
+&lt;li>CPU切换到内核态，保存用户栈到内核栈。&lt;/li>
+&lt;li>内核执行文件写入，完成后恢复用户栈。&lt;/li>
+&lt;li>CPU切换回用户态，程序继续执行。&lt;/li>
+&lt;/ol>&lt;/blockquote>
+&lt;h3 id="微内核和宏内核">微内核和宏内核
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>微内核（Micro Kernel）&lt;/strong>：
+&lt;ul>
+&lt;li>一种精简的内核设计，仅包含操作系统最基本的核心功能，如进程管理、线程管理、IPC和基本的内存管理。&lt;/li>
+&lt;li>其他操作系统功能，如设备驱动、文件系统和网络协议等，则以用户态进程的形式运行。这种设计使得内核代码量小、结构清晰，便于扩展和维护，同时提高了系统的稳定性和安全性。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>宏内核（Monolithic Kernel）&lt;/strong>：
+&lt;ul>
+&lt;li>一种将大部分操作系统功能（如进程管理、内存管理、设备驱动、文件系统等）集成在一个大内核中的设计。&lt;/li>
+&lt;li>所有这些功能都运行在内核空间，通过函数调用直接交互。这种设计使得系统性能较高，因为减少了上下文切换和IPC的开销，但内核代码庞大且复杂，维护困难，且一个模块的崩溃可能导致整个系统崩溃。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>主要区别&lt;/strong>：&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>结构设计&lt;/strong>：
+&lt;ul>
+&lt;li>&lt;strong>微内核&lt;/strong> 将大部分功能分离到用户空间，通过IPC通信；&lt;/li>
+&lt;li>&lt;strong>宏内核&lt;/strong> 将所有功能集成在内核空间，通过函数调用通信；&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>性能&lt;/strong>：
+&lt;ul>
+&lt;li>&lt;strong>微内核&lt;/strong> 由于频繁的IPC和上下文切换，性能可能较低；&lt;/li>
+&lt;li>&lt;strong>宏内核&lt;/strong> 通常性能更高，因为减少了IPC开销；&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>稳定性和安全性&lt;/strong>：
+&lt;ul>
+&lt;li>&lt;strong>微内核&lt;/strong> 由于内核代码少，攻击面小，且服务隔离，稳定性更高；&lt;/li>
+&lt;li>&lt;strong>宏内核&lt;/strong> 由于功能集中，一个模块的崩溃可能导致整个系统崩溃；&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>扩展性和维护&lt;/strong>：
+&lt;ul>
+&lt;li>&lt;strong>微内核&lt;/strong> 的模块化设计便于扩展和维护；&lt;/li>
+&lt;li>&lt;strong>宏内核&lt;/strong> 由于代码复杂，维护和扩展较为困难。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;p>&lt;strong>典型例子&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>微内核&lt;/strong>：QNX、Minix、华为鸿蒙系统；&lt;/li>
+&lt;li>&lt;strong>宏内核&lt;/strong>：Linux、传统的Unix系统、Windows。&lt;/li>
+&lt;/ul>
+&lt;h3 id="上下文切换">上下文切换
+&lt;/h3>&lt;p>&lt;strong>上下文切换&lt;/strong> 是操作系统在CPU核心上切换任务执行状态的过程，具体包括：&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>保存当前任务状态&lt;/strong>：用户态虚拟内存、寄存器、程序计数器、内核堆栈等。&lt;/li>
+&lt;li>&lt;strong>加载新任务状态&lt;/strong>：从内核的进程控制块（PCB）中恢复新任务的资源。&lt;/li>
+&lt;li>&lt;strong>触发条件&lt;/strong>：进程调度（时间片耗尽、I/O完成）、线程切换、中断响应等。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;strong>关键点&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>系统调用会触发两次上下文切换（用户态→内核态→用户态），但&lt;strong>不涉及进程切换&lt;/strong>。&lt;/li>
+&lt;li>切换耗时：每次约几十纳秒到数微秒，高频切换会显著降低CPU利用率。&lt;/li>
+&lt;/ul>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;strong>类型&lt;/strong>&lt;/th>
+&lt;th>&lt;strong>触发场景&lt;/strong>&lt;/th>
+&lt;th>&lt;strong>涉及资源&lt;/strong>&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;strong>进程切换&lt;/strong>&lt;/td>
+&lt;td>多进程竞争CPU（时间片耗尽、进程终止、资源等待）&lt;/td>
+&lt;td>用户态虚拟内存、内核堆栈、寄存器、全局变量（需完全切换）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>线程切换&lt;/strong>&lt;/td>
+&lt;td>多线程共享进程资源（同进程内线程切换更高效）&lt;/td>
+&lt;td>仅切换线程私有数据（寄存器、栈），共享进程虚拟内存和全局变量&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>中断切换&lt;/strong>&lt;/td>
+&lt;td>硬件中断（如I/O完成、定时器中断）触发内核中断服务程序（ISR）&lt;/td>
+&lt;td>仅内核态资源（寄存器、内核堆栈），不涉及用户态资源&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;ul>
+&lt;li>&lt;strong>进程切换耗时更高&lt;/strong>：需刷新TLB（Translation Lookaside Buffer），导致内存访问延迟。&lt;/li>
+&lt;li>&lt;strong>线程切换更轻量&lt;/strong>：共享虚拟内存，无需刷新TLB，耗时约为进程切换的1/10。&lt;/li>
+&lt;/ul>
+&lt;h3 id="dma">DMA
+&lt;/h3>&lt;p>&lt;strong>DMA（Direct Memory Access，直接内存访问）&lt;/strong> 是一种硬件机制，允许外设直接与计算机内存交换数据，&lt;strong>不需要 CPU 介入每一步拷贝&lt;/strong>。它是现代计算机系统中提升效率、减少CPU占用率的核心技术。&lt;/p>
+&lt;p>&lt;strong>以从磁盘读取数据到内存为例&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>传统数据传输&lt;/strong>：
+&lt;ol>
+&lt;li>CPU发送读取命令；&lt;/li>
+&lt;li>磁盘将数据读取到设备侧的 &lt;strong>内部缓冲区（Buffer）&lt;/strong> 中；&lt;/li>
+&lt;li>CPU 通过 &lt;strong>轮询或中断&lt;/strong> 方式获取数据，&lt;strong>逐字节或逐块&lt;/strong> 读取设备 Buffer 中的数据，再写入内存；&lt;/li>
+&lt;li>在数据传输期间，&lt;strong>CPU 需持续参与搬运工作，无法执行其他任务&lt;/strong>，效率较低。&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;li>&lt;strong>DMA 数据传输&lt;/strong>：
+&lt;ol>
+&lt;li>CPU发送读取命令，并配置 DMA 控制器（源地址、目的地址、数据长度）；&lt;/li>
+&lt;li>磁盘将数据读取到设备缓冲区；&lt;/li>
+&lt;li>DMA控制器 &lt;strong>自动将数据从设备 Buffer 直接写入内存&lt;/strong>，无需 CPU 参与；&lt;/li>
+&lt;li>传输完成后，DMA 发出 &lt;strong>中断通知&lt;/strong> CPU，&lt;strong>CPU 可在此期间处理其他任务&lt;/strong>，整体效率显著提升。&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://blog.yellster.top/p/zero-copy/DMA.png"
+width="1080"
+height="525"
+srcset="https://blog.yellster.top/p/zero-copy/DMA_hu_9dc8951193a0bfda.png 480w, https://blog.yellster.top/p/zero-copy/DMA_hu_be4799bd5e34cdde.png 1024w"
+loading="lazy"
+alt="DMA"
+class="gallery-image"
+data-flex-grow="205"
+data-flex-basis="493px"
+>&lt;/p></description></item><item><title>I/O</title><link>https://blog.yellster.top/p/io/</link><pubDate>Fri, 31 May 2024 11:20:31 +0800</pubDate><author>xyp_selune@163.com (Yellster)</author><guid>https://blog.yellster.top/p/io/</guid><description>&lt;img src="https://blog.yellster.top/p/io/io.png" alt="Featured image of post I/O" />&lt;h2 id="什么是io">什么是I/O
+&lt;/h2>&lt;p>I/O，&lt;strong>Input/Output&lt;/strong>，&lt;strong>即输入/输出&lt;/strong>，是计算机系统中用于数据传输的机制，指的是在计算机和外部设备（键盘、显示器、磁盘等）之间，或在计算机内部组件（内存和 CPU）之间的数据传输过程。&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>输入（input）&lt;/strong>：指将数据从外部设备或内存传入到计算机系统的过程。&lt;/li>
+&lt;li>&lt;strong>输出（output）&lt;/strong>：指将数据从计算机系统传送到外部设备或内存的过程。&lt;/li>
+&lt;/ul>
+&lt;p>I/O 设备类型：&lt;/p>
+&lt;ul>
+&lt;li>块设备：磁盘、光盘、USB设备等，以块为单位读写数据，适合随机访问。&lt;/li>
+&lt;li>字符设备：键盘、鼠标、串口、打印机等，以字符流为单位读写数据，适合顺序访问。&lt;/li>
+&lt;/ul>
+&lt;h3 id="计算机角度的io">计算机角度的I/O
+&lt;/h3>&lt;p>我们常说的输入输出，比较直观的意思就是&lt;strong>计算机的输入输出&lt;/strong>，&lt;strong>计算机就是主体&lt;/strong>。&lt;/p>
+&lt;p>&lt;strong>冯.诺依曼结构&lt;/strong>，它将计算机分成分为5个部分：运算器、控制器、存储器、输入设备、输出设备。&lt;/p>
+&lt;p>&lt;img src="https://blog.yellster.top/p/io/%E5%86%AF-%E8%AF%BA%E4%BE%9D%E6%9B%BC%E7%BB%93%E6%9E%84.png"
+width="1784"
+height="932"
+srcset="https://blog.yellster.top/p/io/%E5%86%AF-%E8%AF%BA%E4%BE%9D%E6%9B%BC%E7%BB%93%E6%9E%84_hu_604897a2b548d3fb.png 480w, https://blog.yellster.top/p/io/%E5%86%AF-%E8%AF%BA%E4%BE%9D%E6%9B%BC%E7%BB%93%E6%9E%84_hu_b2a2d5a893c71c27.png 1024w"
+loading="lazy"
+alt="冯.诺依曼结构"
+class="gallery-image"
+data-flex-grow="191"
+data-flex-basis="459px"
+>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>输入设备&lt;/strong>是向计算机输入数据和信息的设备，键盘，鼠标都属于输入设备；&lt;/li>
+&lt;li>&lt;strong>输出设备&lt;/strong>是计算机硬件系统的终端设备，用于接收计算机数据的输出显示，一般显示器、打印机属于输出设备。&lt;/li>
+&lt;/ul>
+&lt;p>鼠标、显示器这只是直观表面的输入输出，回到计算机架构来说，&lt;strong>涉及计算机核心与其他设备间数据迁移的过程，就是I/O&lt;/strong>。&lt;/p>
+&lt;p>如磁盘I/O，就是从磁盘读取数据到内存，这算一次输入，对应的，将内存中的数据写入磁盘，就算输出。这就是I/O的本质。&lt;/p>
+&lt;h3 id="操作系统的io">操作系统的I/O
+&lt;/h3>&lt;p>我们要将内存中的数据写入到磁盘的话，主体会是什么呢？主体可能是一个应用程序，比如一个Java进程（假设网络传来二进制流，一个Java进程可以把它写入到磁盘）。&lt;/p>
+&lt;p>&lt;strong>操作系统&lt;/strong>负责计算机的资源管理和进程的调度。我们电脑上跑着的应用程序，其实是需要经过&lt;strong>操作系统&lt;/strong>，才能做一些特殊操作，如&lt;strong>磁盘文件读写、内存的读写&lt;/strong>等等。因为这些都是比较危险的操作，不可以由应用程序乱来，只能交给底层操作系统来。也就是说，你的应用程序要把数据写入磁盘，只能通过调用操作系统开放出来的API来操作。&lt;/p>
+&lt;p>我们应用程序是跑在用户空间的，它不存在实质的I/O过程，真正的I/O是在&lt;strong>操作系统&lt;/strong>执行的。即应用程序的I/O操作分为两种动作：&lt;strong>I/O调用和I/O执行&lt;/strong>。&lt;/p>
+&lt;p>I/O调用是由进程（应用程序的运行态）发起，而I/O执行是&lt;strong>操作系统内核&lt;/strong>的工作。此时所说的I/O是应用程序对操作系统I/O功能的一次触发，即I/O调用。&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>什么是用户空间？什么是内核空间?&lt;/strong>&lt;/p>
+&lt;p>以32位操作系统为例，它为每一个进程都分配了4G(2的32次方)的内存空间。这4G可访问的内存空间分为二部分，一部分是用户空间，一部分是内核空间。内核空间是操作系统内核访问的区域，是受保护的内存空间，而用户空间是用户应用程序访问的内存区域。&lt;/p>&lt;/blockquote>
+&lt;h3 id="操作系统的一次io过程">操作系统的一次I/O过程
+&lt;/h3>&lt;p>应用程序发起的一次I/O操作包含两个阶段：&lt;/p>
+&lt;ul>
+&lt;li>I/O调用：应用程序进程向&lt;strong>操作系统内核&lt;/strong>发起调用。&lt;/li>
+&lt;li>I/O执行：操作系统内核完成I/O操作。&lt;/li>
+&lt;/ul>
+&lt;p>操作系统内核完成I/O操作还包括两个过程：&lt;/p>
+&lt;ul>
+&lt;li>准备数据：内核等待I/O设备准备好数据。&lt;/li>
+&lt;li>拷贝数据：将数据从内核缓冲区拷贝到用户进程缓冲区。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://blog.yellster.top/p/io/IO%E8%BF%87%E7%A8%8B.png"
+width="2160"
+height="1106"
+srcset="https://blog.yellster.top/p/io/IO%E8%BF%87%E7%A8%8B_hu_8deae71b6d751300.png 480w, https://blog.yellster.top/p/io/IO%E8%BF%87%E7%A8%8B_hu_5e8163623202590d.png 1024w"
+loading="lazy"
+alt="I/O过程"
+class="gallery-image"
+data-flex-grow="195"
+data-flex-basis="468px"
+>&lt;/p>
+&lt;p>其实I/O就是把进程的内部数据转移到外部设备，或者把外部设备的数据迁移到进程内部。外部设备一般指硬盘、socket通讯的网卡。一个完整的&lt;strong>I/O过程&lt;/strong>包括以下几个步骤：&lt;/p>
+&lt;ul>
+&lt;li>应用程序进程向操作系统发起&lt;strong>I/O调用请求&lt;/strong>&lt;/li>
+&lt;li>操作系统&lt;strong>准备数据&lt;/strong>，把I/O外部设备的数据，加载到&lt;strong>内核缓冲区&lt;/strong>&lt;/li>
+&lt;li>操作系统拷贝数据，即将内核缓冲区的数据，拷贝到用户进程缓冲区&lt;/li>
+&lt;/ul>
+&lt;h2 id="io模型">I/O模型
+&lt;/h2>&lt;h3 id="阻塞-vs-非阻塞-vs-异步">阻塞 vs 非阻塞 vs 异步
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>阻塞&lt;/strong>：调用 &lt;code>read()/write()&lt;/code> 时，进程被挂起直至操作完成，简单易用但会导致资源空转。&lt;/li>
+&lt;li>&lt;strong>非阻塞&lt;/strong>：通过在文件描述符上设置 &lt;code>O_NONBLOCK&lt;/code> 标志，使得 &lt;code>read()/write()&lt;/code> 调用不会阻塞，而是立即返回，需配合 &lt;code>select/poll&lt;/code> 等多路复用手段实现效率提升。&lt;/li>
+&lt;li>&lt;strong>异步&lt;/strong>：调用类似 &lt;code>aio_read()/aio_write()&lt;/code>，进程发起调用后立即返回，内核完成I/O操作后通过&lt;strong>回调或事件通知&lt;/strong>告知进程，无需轮询，允许并行处理其他任务。&lt;/li>
+&lt;/ul>
+&lt;h3 id="五种经典-io-模型">五种经典 I/O 模型
+&lt;/h3>&lt;h4 id="阻塞io模型-bio-blocking-io">阻塞I/O模型 (BIO, Blocking I/O)
+&lt;/h4>&lt;p>假设应用程序的进程发起&lt;strong>I/O调用&lt;/strong>（&lt;code>read()&lt;/code> 或 &lt;code>write()&lt;/code>），但是如果&lt;strong>内核的数据还没准备好&lt;/strong>的话，那应用程序进程就一直在&lt;strong>阻塞等待&lt;/strong>，一直等到内核数据准备好了，从内核拷贝到用户空间，才返回成功提示，此次I/O操作，称之为&lt;strong>阻塞I/O&lt;/strong>。&lt;/p>
+&lt;p>&lt;img src="https://blog.yellster.top/p/io/%E9%98%BB%E5%A1%9EIO%E6%A8%A1%E5%9E%8B.png"
+width="2160"
+height="1130"
+srcset="https://blog.yellster.top/p/io/%E9%98%BB%E5%A1%9EIO%E6%A8%A1%E5%9E%8B_hu_96fa08004de89fd9.png 480w, https://blog.yellster.top/p/io/%E9%98%BB%E5%A1%9EIO%E6%A8%A1%E5%9E%8B_hu_e19611a2a189f803.png 1024w"
+loading="lazy"
+alt="阻塞I/O模型"
+class="gallery-image"
+data-flex-grow="191"
+data-flex-basis="458px"
+>&lt;/p>
+&lt;ul>
+&lt;li>阻塞I/O比较经典的应用就是&lt;strong>阻塞socket、Java BIO&lt;/strong>。&lt;/li>
+&lt;li>阻塞I/O的缺点就是：如果内核数据一直没准备好，那用户进程将一直阻塞，&lt;strong>浪费性能&lt;/strong>，可以使用&lt;strong>非阻塞I/O&lt;/strong>优化。&lt;/li>
+&lt;/ul>
+&lt;h4 id="非阻塞io模型-nio-non-blocking-io">非阻塞I/O模型 (NIO, Non-Blocking I/O)
+&lt;/h4>&lt;p>在文件描述符上设置 &lt;code>O_NONBLOCK&lt;/code>，使 &lt;code>read()/write()&lt;/code> 调用立即返回，若无法立刻完成则返回 &lt;code>EAGAIN&lt;/code>（对于套接字也可能是 &lt;code>EWOULDBLOCK&lt;/code>），要求开发者主动轮询或结合多路复用进行事件驱动处理。&lt;/p>
+&lt;blockquote>
+&lt;ul>
+&lt;li>&lt;strong>成功完成&lt;/strong>：返回实际读写的字节数（0 表示 EOF）&lt;/li>
+&lt;li>&lt;strong>无法立即完成（会阻塞）&lt;/strong>：返回 -1，&lt;code>errno == EAGAIN&lt;/code>；若是套接字，也可能 &lt;code>errno == EWOULDBLOCK&lt;/code>&lt;/li>
+&lt;li>&lt;strong>其他错误&lt;/strong>：如 &lt;code>EBADF&lt;/code>、&lt;code>EFAULT&lt;/code>、&lt;code>EINTR&lt;/code> 等，根据具体场景返回对应错误码&lt;/li>
+&lt;/ul>&lt;/blockquote>
+&lt;p>&lt;img src="https://blog.yellster.top/p/io/%E9%9D%9E%E9%98%BB%E5%A1%9EIO.png"
+width="2160"
+height="1528"
+srcset="https://blog.yellster.top/p/io/%E9%9D%9E%E9%98%BB%E5%A1%9EIO_hu_4c28639776292d8e.png 480w, https://blog.yellster.top/p/io/%E9%9D%9E%E9%98%BB%E5%A1%9EIO_hu_53fadcaaef01d490.png 1024w"
+loading="lazy"
+alt="非阻塞I/O"
+class="gallery-image"
+data-flex-grow="141"
+data-flex-basis="339px"
+>&lt;/p>
+&lt;p>非阻塞I/O模型，简称&lt;strong>NIO&lt;/strong>，&lt;code>Non-Blocking I/O&lt;/code>。它相对于阻塞I/O，虽然大幅提升了性能，但是它依然存在&lt;strong>性能问题&lt;/strong>，即&lt;strong>频繁的轮询&lt;/strong>，导致频繁的系统调用，同样会消耗大量的CPU资源。可以考虑&lt;strong>I/O复用模型&lt;/strong>，去解决这个问题。&lt;/p>
+&lt;h4 id="多路复用io模型-mio-multiplexing-io">多路复用I/O模型 (MIO, Multiplexing I/O)
+&lt;/h4>&lt;p>既然&lt;strong>NIO&lt;/strong>无效的轮询会导致CPU资源消耗，我们等到内核数据准备好了，主动通知应用进程再去进行系统调用，那不就好了嘛？&lt;/p>
+&lt;p>I/O复用模型核心思路：系统给我们提供&lt;strong>一类函数&lt;/strong>（&lt;strong>select、poll、epoll&lt;/strong>函数），在单个线程中监控大量&lt;strong>文件描述符&lt;/strong>的可读写状态，实现阻塞或边缘触发的事件分发机制，从而避免因阻塞 I/O 导致的线程资源浪费。&lt;/p>
+&lt;blockquote>
+&lt;p>在 UNIX/Linux 中，&lt;strong>文件描述符（FD，File Descriptor）&lt;/strong> 是内核为每个已打开资源（常见有普通文件、管道、套接字、字符设备等）分配的一个&lt;strong>非负整数&lt;/strong>，它充当用户空间进程与内核 I/O 子系统之间的句柄。例如：&lt;/p>
+&lt;ul>
+&lt;li>FD = 0：标准输入（stdin）&lt;/li>
+&lt;li>FD = 1：标准输出（stdout）&lt;/li>
+&lt;li>FD ≥ 3：其他打开的文件或套接字&lt;/li>
+&lt;/ul>
+&lt;p>所有 I/O 系统调用（如 &lt;code>read(fd, buf, n)&lt;/code>、&lt;code>write(fd, buf, n)&lt;/code>）均通过这个整数索引来标识目标资源。&lt;/p>&lt;/blockquote>
+&lt;h5 id="select">select
+&lt;/h5>&lt;p>应用进程通过调用&lt;strong>select&lt;/strong>函数，可以同时监控多个 &lt;code>fd&lt;/code>，在 &lt;code>select&lt;/code>函数监控的 &lt;code>fd&lt;/code> 中，只要有任何一个数据状态准备就绪了，&lt;code>select&lt;/code> 函数就会返回可读状态，这时应用进程再发起 &lt;code>recvfrom&lt;/code> 请求去读取数据。&lt;/p>
+&lt;p>&lt;img src="https://blog.yellster.top/p/io/select.png"
+width="2160"
+height="1320"
+srcset="https://blog.yellster.top/p/io/select_hu_7d14980e6febe213.png 480w, https://blog.yellster.top/p/io/select_hu_bd2e0c412fc285a6.png 1024w"
+loading="lazy"
+alt="select"
+class="gallery-image"
+data-flex-grow="163"
+data-flex-basis="392px"
+>&lt;/p>
+&lt;p>非阻塞I/O模型（NIO）中，需要 &lt;code>N&lt;/code>（N&amp;gt;=1）次轮询系统调用，然而借助 &lt;code>select&lt;/code> 的I/O多路复用模型，只需要发起一次询问就够了，大大优化了性能。&lt;/p>
+&lt;p>但是呢，&lt;code>select&lt;/code>有几个缺点：&lt;/p>
+&lt;ul>
+&lt;li>监听的I/O最大连接数有限，在Linux系统上一般为1024。&lt;/li>
+&lt;li>select函数返回后，是通过&lt;strong>遍历&lt;/strong> &lt;code>fdset&lt;/code>，找到就绪的描述符 &lt;code>fd&lt;/code>。（仅知道有I/O事件发生，却不知是哪几个流，所以&lt;strong>遍历所有流&lt;/strong>）&lt;/li>
+&lt;/ul>
+&lt;p>因为&lt;strong>存在连接数限制&lt;/strong>，所以后来又提出了&lt;strong>poll&lt;/strong>。与select相比，&lt;strong>poll&lt;/strong>解决了&lt;strong>连接数限制问题&lt;/strong>。但是呢，select和poll一样，还是需要通过遍历文件描述符来获取已经就绪的 &lt;code>socket&lt;/code>。如果同时连接的大量客户端，在一时刻可能只有极少处于就绪状态，伴随着监视的描述符数量的增长，&lt;strong>效率也会线性下降&lt;/strong>。&lt;/p>
+&lt;p>因此经典的多路复用模型 &lt;code>epoll&lt;/code>诞生。&lt;/p>
+&lt;h5 id="epoll">epoll
+&lt;/h5>&lt;p>为了解决 &lt;code>select/poll&lt;/code>存在的问题，多路复用模型 &lt;code>epoll&lt;/code>诞生，它采用事件驱动来实现，流程图如下：&lt;/p>
+&lt;p>&lt;img src="https://blog.yellster.top/p/io/epoll.png"
+width="2160"
+height="1312"
+srcset="https://blog.yellster.top/p/io/epoll_hu_26385753c109246.png 480w, https://blog.yellster.top/p/io/epoll_hu_3fd15b2fd037a372.png 1024w"
+loading="lazy"
+alt="epoll"
+class="gallery-image"
+data-flex-grow="164"
+data-flex-basis="395px"
+>&lt;/p>
+&lt;p>&lt;strong>epoll&lt;/strong>先通过 &lt;code>epoll_ctl()&lt;/code> 来注册一个 &lt;code>fd&lt;/code>，一旦基于某个 &lt;code>fd&lt;/code> 就绪时，内核会采用回调机制，迅速激活这个 &lt;code>fd&lt;/code>，当进程调用 &lt;code>epoll_wait()&lt;/code>时便得到通知。这里去掉了&lt;strong>遍历文件描述符&lt;/strong>的操作，而是采用&lt;strong>监听事件回调&lt;/strong>的机制。这就是epoll的亮点。&lt;/p>
+&lt;h5 id="selectpollepoll的区别">select、poll、epoll的区别
+&lt;/h5>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;/th>
+&lt;th>select&lt;/th>
+&lt;th>poll&lt;/th>
+&lt;th>epoll&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>底层数据结构&lt;/td>
+&lt;td>数组&lt;/td>
+&lt;td>链表&lt;/td>
+&lt;td>红黑树和双链表&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>获取就绪的fd&lt;/td>
+&lt;td>遍历&lt;/td>
+&lt;td>遍历&lt;/td>
+&lt;td>事件回调&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>事件复杂度&lt;/td>
+&lt;td>O(n)&lt;/td>
+&lt;td>O(n)&lt;/td>
+&lt;td>O(1)&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>最大连接数&lt;/td>
+&lt;td>1024&lt;/td>
+&lt;td>无限制&lt;/td>
+&lt;td>无限制&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>fd数据拷贝&lt;/td>
+&lt;td>每次调用select，需要将fd数据从用户空间拷贝到内核空间&lt;/td>
+&lt;td>每次调用poll，需要将fd数据从用户空间拷贝到内核空间&lt;/td>
+&lt;td>使用内存映射(mmap)，不需要从用户空间频繁拷贝fd数据到内核空间&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;strong>epoll&lt;/strong>明显优化了I/O的执行效率，但在进程调用 &lt;code>epoll_wait()&lt;/code>时，仍然可能被阻塞。&lt;/p>
+&lt;h4 id="信号驱动io模型-sdio-signal-driven-io">信号驱动I/O模型 (SDIO, Signal-driven I/O)
+&lt;/h4>&lt;p>信号驱动I/O不再用主动询问的方式去确认数据是否就绪，而是向内核发送一个信号（调用 &lt;code>sigaction&lt;/code> 的时候建立一个 &lt;code>SIGIO&lt;/code> 的信号），然后应用用户进程可以去做别的事，不用阻塞。当内核数据准备好后，再通过 &lt;code>SIGIO&lt;/code> 信号通知应用进程，数据准备好后的可读状态。应用用户进程收到信号之后，立即调用 &lt;code>recvfrom&lt;/code>，去读取数据。&lt;/p>
+&lt;p>&lt;img src="https://blog.yellster.top/p/io/%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8IO%E6%A8%A1%E5%9E%8B.png"
+width="2160"
+height="1324"
+srcset="https://blog.yellster.top/p/io/%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8IO%E6%A8%A1%E5%9E%8B_hu_a20f69c0ec854949.png 480w, https://blog.yellster.top/p/io/%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8IO%E6%A8%A1%E5%9E%8B_hu_fb0f40ed63b73bfa.png 1024w"
+loading="lazy"
+alt="信号驱动I/O模型"
+class="gallery-image"
+data-flex-grow="163"
+data-flex-basis="391px"
+>&lt;/p>
+&lt;p>信号驱动I/O模型，在应用进程发出信号后，是立即返回的，不会阻塞进程。它已经有异步操作的感觉了。但是你细看上面的流程图，&lt;strong>发现数据复制到应用缓冲的时候&lt;/strong>，应用进程还是阻塞的。回过头来看下，不管是BIO，还是NIO，还是信号驱动，在数据从内核复制到应用缓冲的时候，都是阻塞的。&lt;/p>
+&lt;h4 id="异步io模型-aio-asynchronous-io">异步I/O模型 (AIO, Asynchronous I/O)
+&lt;/h4>&lt;p>前面讲的 &lt;code>BIO&lt;/code>，&lt;code>NIO&lt;/code>和&lt;code>SDIO&lt;/code>，在数据从内核复制到应用缓冲的时候，都是&lt;strong>阻塞&lt;/strong>的，因此都不算是真正的异步。&lt;code>AIO&lt;/code>实现了I/O全流程的非阻塞，就是应用进程发出系统调用后，是立即返回的，但是&lt;strong>立即返回的不是处理结果，而是表示提交成功类似的意思&lt;/strong>。等内核数据准备好，将数据拷贝到用户进程缓冲区，发送信号通知用户进程I/O操作执行完毕。&lt;/p>
+&lt;p>&lt;img src="https://blog.yellster.top/p/io/%E5%BC%82%E6%AD%A5IO%E6%A8%A1%E5%9E%8B.png"
+width="2160"
+height="1352"
+srcset="https://blog.yellster.top/p/io/%E5%BC%82%E6%AD%A5IO%E6%A8%A1%E5%9E%8B_hu_7c09de5e6fbebc58.png 480w, https://blog.yellster.top/p/io/%E5%BC%82%E6%AD%A5IO%E6%A8%A1%E5%9E%8B_hu_bb84c71d731079d4.png 1024w"
+loading="lazy"
+alt="异步I/O模型"
+class="gallery-image"
+data-flex-grow="159"
+data-flex-basis="383px"
+>&lt;/p>
+&lt;p>异步I/O的优化思路很简单，只需要向内核发送一次请求，就可以完成数据状态询问和数据拷贝的所有操作，并且不用阻塞等待结果。日常开发中，有类似思想的业务场景：&lt;/p>
+&lt;blockquote>
+&lt;p>比如发起一笔批量转账，但是批量转账处理比较耗时，这时候后端可以先告知前端转账提交成功，等到结果处理完，再通知前端结果即可。&lt;/p>&lt;/blockquote>
+&lt;h3 id="io-模型对比">I/O 模型对比
+&lt;/h3>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>模型&lt;/th>
+&lt;th>调用时阻塞？&lt;/th>
+&lt;th>数据就绪时阻塞？&lt;/th>
+&lt;th>特点&lt;/th>
+&lt;th>常见应用&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>阻塞 I/O（Blocking I/O）&lt;/td>
+&lt;td>是&lt;/td>
+&lt;td>—&lt;/td>
+&lt;td>最简单，单线程也能完成&lt;/td>
+&lt;td>Java BIO&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>非阻塞 I/O（Non-Blocking）&lt;/td>
+&lt;td>否&lt;/td>
+&lt;td>是&lt;/td>
+&lt;td>需轮询 &lt;code>EAGAIN&lt;/code>&lt;/td>
+&lt;td>C++ low-level&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>多路复用 I/O&lt;/td>
+&lt;td>否&lt;/td>
+&lt;td>否&lt;/td>
+&lt;td>单线程管理上万 FD，不轮询所有 FD&lt;/td>
+&lt;td>Nginx、Node.js&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>信号驱动 I/O（SIGIO）&lt;/td>
+&lt;td>否&lt;/td>
+&lt;td>是&lt;/td>
+&lt;td>用信号通知，信号处理函数中读写&lt;/td>
+&lt;td>较少使用&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>异步 I/O（POSIX AIO）&lt;/td>
+&lt;td>否&lt;/td>
+&lt;td>否&lt;/td>
+&lt;td>真异步，全流程不阻塞&lt;/td>
+&lt;td>高性能文件服务&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="何时选哪种模型">何时选哪种模型
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>简单脚本／小工具&lt;/strong>：阻塞 I/O 足矣。&lt;/li>
+&lt;li>&lt;strong>多连接高并发&lt;/strong>：首选多路复用（&lt;code>epoll&lt;/code>/&lt;code>kqueue&lt;/code>）＋非阻塞。&lt;/li>
+&lt;li>&lt;strong>极致性能&lt;/strong>：结合零拷贝（&lt;code>sendfile&lt;/code>、&lt;code>splice&lt;/code>）或 Linux &lt;code>io_uring&lt;/code>。&lt;/li>
+&lt;li>&lt;strong>跨平台服务&lt;/strong>：可借助 Java Netty、Rust Tokio、Go runtime 等，它们底层封装了最佳模型。&lt;/li>
+&lt;/ul>
+&lt;h2 id="拓展">拓展
+&lt;/h2>&lt;ul>
+&lt;li>&lt;strong>&lt;a class="link" href="https://blog.yellster.top/p/zero-copy/" >零拷贝技术&lt;/a>&lt;/strong>：&lt;code>sendfile()&lt;/code>、&lt;code>splice()&lt;/code>、&lt;code>mmap()&lt;/code>&lt;/li>
+&lt;li>&lt;strong>&lt;a class="link" href="https://blog.yellster.top/p/io_uring/" >io_uring&lt;/a>&lt;/strong>：Linux 5.1+ 提供的真正零系统调用异步接口&lt;/li>
+&lt;li>&lt;strong>Windows IOCP&lt;/strong>：高性能 proactor 模型&lt;/li>
+&lt;li>&lt;strong>虚拟化 I/O&lt;/strong>：Virtio、SR-IOV、DDIO 加速&lt;/li>
+&lt;/ul></description></item></channel></rss>
