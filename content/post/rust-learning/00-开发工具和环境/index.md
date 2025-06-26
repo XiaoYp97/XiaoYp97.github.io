@@ -9,7 +9,7 @@ hidden: false
 comments: false
 draft: false
 tags: ["Rust", "开发环境", "工具链"]
-categories: ["Rust 学习"]
+categories: ["Rust"]
 ---
 
 在开始 Rust 开发之旅之前，我们需要配置一个高效的开发环境。本文将详细介绍如何搭建一个完整的 Rust 开发环境，包括必要的工具和插件。
