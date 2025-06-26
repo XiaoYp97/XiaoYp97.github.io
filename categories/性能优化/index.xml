@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>性能优化 on Yellster - Blog</title><link>https://blog.yellster.top/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</link><description>Recent content in 性能优化 on Yellster - Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>xyp_selune@163.com (Yellster)</managingEditor><webMaster>xyp_selune@163.com (Yellster)</webMaster><lastBuildDate>Wed, 11 Sep 2024 18:19:26 +0800</lastBuildDate><atom:link href="https://blog.yellster.top/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.xml" rel="self" type="application/rss+xml"/><item><title>性能优化：从数据出发，基于实际需求</title><link>https://blog.yellster.top/p/performance-optimization/</link><pubDate>Wed, 11 Sep 2024 18:19:26 +0800</pubDate><author>xyp_selune@163.com (Yellster)</author><guid>https://blog.yellster.top/p/performance-optimization/</guid><description>&lt;img src="https://blog.yellster.top/p/performance-optimization/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.webp" alt="Featured image of post 性能优化：从数据出发，基于实际需求" />&lt;blockquote>
+&lt;ul>
+&lt;li>&lt;strong>脱离场景谈性能，都是耍流氓。&lt;/strong>&lt;/li>
+&lt;li>&lt;strong>过早的优化是万恶之源。&lt;/strong>&lt;/li>
+&lt;li>&lt;strong>优化要基于数据，而非猜测。&lt;/strong>&lt;/li>
+&lt;/ul>&lt;/blockquote>
+&lt;h2 id="性能的本质">性能的本质
+&lt;/h2>&lt;p>性能优化的最终目标是提升用户体验，并提高系统的效率。要达成这一目标，我们需要从系统最基本的组成部分和性能指标入手。&lt;/p>
+&lt;h2 id="计算机系统的基本组成">计算机系统的基本组成
+&lt;/h2>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>CPU&lt;/strong>：执行计算的核心&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>指令执行&lt;/strong>：处理各种指令，影响程序的执行速度。&lt;/li>
+&lt;li>&lt;strong>数据处理&lt;/strong>：进行数值计算、数据操作。&lt;/li>
+&lt;li>&lt;strong>任务调度&lt;/strong>：协调系统中的多个任务并合理分配资源。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>内存&lt;/strong>：临时数据存储&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>数据读写&lt;/strong>：内存的读写速度直接影响系统的响应时间。&lt;/li>
+&lt;li>&lt;strong>缓存管理&lt;/strong>：缓存优化有助于减少重复计算，提高效率。&lt;/li>
+&lt;li>&lt;strong>内存分配&lt;/strong>：合理管理内存的分配与回收，避免内存泄漏。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>I/O&lt;/strong>：数据交换&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>网络通信&lt;/strong>：数据在网络中传输的延迟和带宽。&lt;/li>
+&lt;li>&lt;strong>磁盘读写&lt;/strong>：磁盘操作的延迟和吞吐量。&lt;/li>
+&lt;li>&lt;strong>设备交互&lt;/strong>：外部设备的访问速度。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="性能的关键指标">性能的关键指标
+&lt;/h2>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>响应时间 (Response Time)&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>定义&lt;/strong>：从请求发起到响应完成的时间。&lt;/li>
+&lt;li>&lt;strong>衡量方式&lt;/strong>：
+&lt;ul>
+&lt;li>&lt;strong>平均响应时间&lt;/strong>：常用的基准，衡量系统的总体性能。&lt;/li>
+&lt;li>&lt;strong>P95 / P99&lt;/strong>：95%或99%的请求响应时间，可以更准确地反映系统在高负载下的表现。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>影响因素&lt;/strong>：
+&lt;ul>
+&lt;li>&lt;strong>计算复杂度&lt;/strong>：算法和数据结构的设计。&lt;/li>
+&lt;li>&lt;strong>资源等待时间&lt;/strong>：CPU、内存或I/O的占用情况。&lt;/li>
+&lt;li>&lt;strong>网络延迟&lt;/strong>：数据传输中的延迟。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>吞吐量 (Throughput)&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>定义&lt;/strong>：单位时间内系统处理的请求数量。&lt;/li>
+&lt;li>&lt;strong>衡量方式&lt;/strong>：
+&lt;ul>
+&lt;li>&lt;strong>TPS（每秒事务数）&lt;/strong>&lt;/li>
+&lt;li>&lt;strong>QPS（每秒查询数）&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>影响因素&lt;/strong>：
+&lt;ul>
+&lt;li>&lt;strong>系统资源容量&lt;/strong>：硬件性能的上限。&lt;/li>
+&lt;li>&lt;strong>并发处理能力&lt;/strong>：系统处理多个请求的能力。&lt;/li>
+&lt;li>&lt;strong>请求处理效率&lt;/strong>：处理每个请求的速度。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>资源利用率&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>CPU 使用率&lt;/strong>：CPU资源是否被充分利用。&lt;/li>
+&lt;li>&lt;strong>内存占用&lt;/strong>：内存是否得到了合理使用，避免内存过度使用或浪费。&lt;/li>
+&lt;li>&lt;strong>I/O 负载&lt;/strong>：磁盘与网络的负载情况，避免出现I/O瓶颈。&lt;/li>
+&lt;li>&lt;strong>网络带宽&lt;/strong>：数据传输的速度和效率。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="性能优化的方法论">性能优化的方法论
+&lt;/h2>&lt;h3 id="确定优化目标">确定优化目标
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>明确业务需求&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>响应时间&lt;/strong>：设定用户期望的响应时间。&lt;/li>
+&lt;li>&lt;strong>并发量&lt;/strong>：定义系统能承载的最大并发请求数。&lt;/li>
+&lt;li>&lt;strong>资源成本&lt;/strong>：优化是否能控制在可接受的资源消耗范围内。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>设定具体指标&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>性能目标&lt;/strong>：设置明确、量化的性能目标。&lt;/li>
+&lt;li>&lt;strong>可测量标准&lt;/strong>：确保所有优化都可以通过实际数据进行验证。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="性能分析">性能分析
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>收集性能数据&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>系统监控&lt;/strong>：使用监控工具采集实时的系统指标。&lt;/li>
+&lt;li>&lt;strong>性能测试&lt;/strong>：通过负载测试、压力测试等手段获取数据。&lt;/li>
+&lt;li>&lt;strong>用户反馈&lt;/strong>：关注用户的使用体验，发现性能瓶颈。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>定位性能瓶颈&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>CPU 密集型&lt;/strong>：算法或代码的计算量过大。&lt;/li>
+&lt;li>&lt;strong>内存问题&lt;/strong>：内存分配不当，可能导致频繁的垃圾回收或内存泄漏。&lt;/li>
+&lt;li>&lt;strong>I/O 瓶颈&lt;/strong>：磁盘或网络读写延迟过高。&lt;/li>
+&lt;li>&lt;strong>网络延迟&lt;/strong>：服务器与客户端之间的传输延迟。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="优化策略">优化策略
+&lt;/h3>&lt;h4 id="cpu-优化">CPU 优化
+&lt;/h4>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>算法优化&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>降低时间复杂度&lt;/strong>：选择合适的算法来减少计算量。&lt;/li>
+&lt;li>&lt;strong>减少不必要的计算&lt;/strong>：优化代码，避免重复的计算操作。&lt;/li>
+&lt;li>&lt;strong>利用缓存&lt;/strong>：缓存计算结果，避免重复计算。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>并发处理&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>多线程优化&lt;/strong>：通过多核 CPU 的并行计算提高效率。&lt;/li>
+&lt;li>&lt;strong>异步处理&lt;/strong>：避免阻塞操作，提高响应速度。&lt;/li>
+&lt;li>&lt;strong>任务调度优化&lt;/strong>：合理安排任务执行的顺序，减少等待时间。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h4 id="内存优化">内存优化
+&lt;/h4>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>内存管理&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>避免内存泄漏&lt;/strong>：及时释放不再使用的内存。&lt;/li>
+&lt;li>&lt;strong>优化对象创建与回收&lt;/strong>：减少内存分配的频率，避免频繁的GC。&lt;/li>
+&lt;li>&lt;strong>合理设置内存参数&lt;/strong>：根据业务需求调优JVM或其他内存配置。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>缓存策略&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>多级缓存设计&lt;/strong>：使用本地缓存、分布式缓存等技术提高读取性能。&lt;/li>
+&lt;li>&lt;strong>缓存预热&lt;/strong>：提前加载常用数据，减少请求时的延迟。&lt;/li>
+&lt;li>&lt;strong>缓存更新策略&lt;/strong>：确保缓存中的数据保持最新，避免缓存不一致问题。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h4 id="io-优化">I/O 优化
+&lt;/h4>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>磁盘 I/O&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>批量处理&lt;/strong>：减少频繁的磁盘读写，采用批量处理来提高效率。&lt;/li>
+&lt;li>&lt;strong>异步 I/O&lt;/strong>：避免阻塞操作，通过异步方式提高吞吐量。&lt;/li>
+&lt;li>&lt;strong>数据压缩&lt;/strong>：通过压缩数据减少磁盘读写的负载。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>网络 I/O&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>连接池管理&lt;/strong>：有效管理网络连接，避免频繁创建和销毁连接。&lt;/li>
+&lt;li>&lt;strong>数据传输优化&lt;/strong>：优化数据传输协议，减少数据传输的延迟。&lt;/li>
+&lt;li>&lt;strong>协议优化&lt;/strong>：使用合适的协议提高通信效率，如 HTTP/2 或 gRPC。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="优化实施">优化实施
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>循序渐进&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>从瓶颈开始&lt;/strong>：先优化影响最大、最容易解决的瓶颈。&lt;/li>
+&lt;li>&lt;strong>一处改动，一次验证&lt;/strong>：避免一次性改动过多，确保每次优化都有明确的效果验证。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>验证效果&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>性能测试&lt;/strong>：每次优化后进行详细的性能测试，确保效果可量化。&lt;/li>
+&lt;li>&lt;strong>A/B 测试&lt;/strong>：在真实用户环境中验证优化效果。&lt;/li>
+&lt;li>&lt;strong>生产环境验证&lt;/strong>：持续在生产环境中监控优化后的效果。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="常见优化场景">常见优化场景
+&lt;/h2>&lt;h3 id="web-应用优化">Web 应用优化
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>前端优化&lt;/strong>：减少资源加载时间，提升渲染性能。&lt;/li>
+&lt;li>&lt;strong>后端优化&lt;/strong>：优化接口响应时间，减少数据库查询延迟。&lt;/li>
+&lt;li>&lt;strong>数据库优化&lt;/strong>：使用索引、查询优化等手段提升数据库性能。&lt;/li>
+&lt;/ul>
+&lt;h3 id="分布式系统优化">分布式系统优化
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>负载均衡&lt;/strong>：均衡地分配请求到多个服务节点，提高系统的并发能力。&lt;/li>
+&lt;li>&lt;strong>服务拆分&lt;/strong>：将单一服务拆分为多个小服务，减少单一服务的压力。&lt;/li>
+&lt;li>&lt;strong>数据分片&lt;/strong>：将数据分片存储，减少单节点的数据压力。&lt;/li>
+&lt;/ul>
+&lt;h3 id="大数据处理优化">大数据处理优化
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>数据分区&lt;/strong>：将数据按一定规则分区，减少单个查询的扫描量。&lt;/li>
+&lt;li>&lt;strong>并行计算&lt;/strong>：利用分布式计算框架（如 Spark）进行并行计算，提高处理速度。&lt;/li>
+&lt;li>&lt;strong>资源调度&lt;/strong>：合理分配资源，避免资源浪费和过载。&lt;/li>
+&lt;/ul>
+&lt;h2 id="优化的注意事项">优化的注意事项
+&lt;/h2>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>避免过早优化&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>优化应基于真实的性能数据，而不是主观臆断。&lt;/li>
+&lt;li>&lt;strong>先保证功能正确&lt;/strong>，再根据数据进行优化。&lt;/li>
+&lt;li>优化时要考虑成本和收益，不要在不必要的地方过度优化。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>保持简单性&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>可维护性优先&lt;/strong>，避免过度设计和复杂化。&lt;/li>
+&lt;li>优化应该以简洁、可扩展的方式进行，避免对系统产生负担。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>持续监控&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>建立监控体系&lt;/strong>：对系统性能进行实时监控。&lt;/li>
+&lt;li>&lt;strong>及时发现问题&lt;/strong>：通过监控数据及时发现潜在的性能瓶颈。&lt;/li>
+&lt;li>&lt;strong>评估优化效果&lt;/strong>：通过监控工具评估每次优化的实际效果。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="总结">总结
+&lt;/h2>&lt;p>性能优化是一个持续不断的过程，需要：&lt;/p>
+&lt;ul>
+&lt;li>深入理解系统架构，准确定位瓶颈。&lt;/li>
+&lt;li>建立科学的优化方法，避免过早优化和盲目优化。&lt;/li>
+&lt;li>持续进行监控和改进，以确保系统始终处于最佳状态。&lt;/li>
+&lt;/ul>
+&lt;p>最重要的是，&lt;strong>性能优化永远要基于实际需求和数据，而不是单纯的经验或猜测&lt;/strong>。始终保持对性能的敏感度，并根据业务变化进行动态调整。&lt;/p></description></item></channel></rss>

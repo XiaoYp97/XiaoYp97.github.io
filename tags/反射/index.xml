@@ -1,0 +1,732 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>反射 on Yellster - Blog</title><link>https://blog.yellster.top/tags/%E5%8F%8D%E5%B0%84/</link><description>Recent content in 反射 on Yellster - Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>xyp_selune@163.com (Yellster)</managingEditor><webMaster>xyp_selune@163.com (Yellster)</webMaster><lastBuildDate>Wed, 27 Mar 2024 17:24:03 +0800</lastBuildDate><atom:link href="https://blog.yellster.top/tags/%E5%8F%8D%E5%B0%84/index.xml" rel="self" type="application/rss+xml"/><item><title>动态代理？</title><link>https://blog.yellster.top/p/java-dynamic-proxy/</link><pubDate>Wed, 27 Mar 2024 17:24:03 +0800</pubDate><author>xyp_selune@163.com (Yellster)</author><guid>https://blog.yellster.top/p/java-dynamic-proxy/</guid><description>&lt;h2 id="代理模式">代理模式
+&lt;/h2>&lt;p>&lt;strong>代理模式（Proxy Pattern）&lt;/strong> 是一种结构型设计模式，通过为其他对象提供一种代理以控制对这个对象的访问。&lt;/p>
+&lt;p>​它通常用于在不修改原始对象的情况下，增加对对象的控制和扩展功能，例如访问控制、延迟加载、日志记录等。​&lt;/p>
+&lt;h3 id="静态代理">静态代理
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>定义:&lt;/strong> 在编译时，代理类已经存在，代理对象和被代理对象之间是一对一的关系。&lt;/li>
+&lt;li>&lt;strong>实现方式:&lt;/strong> 手动创建代理类，实现与被代理类相同的接口，在代理类中持有被代理类的实例，通过调用被代理类的方法来实现代理功能。&lt;/li>
+&lt;li>&lt;strong>优点:&lt;/strong> 代码简单，易于理解。&lt;/li>
+&lt;li>&lt;strong>缺点:&lt;/strong> 每增加一个被代理类，都需要创建一个对应的代理类，代码重复度高，维护困难。&lt;/li>
+&lt;/ul>
+&lt;h3 id="动态代理">动态代理
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>定义:&lt;/strong> 在运行时动态生成代理类，无需在编译时预先定义代理类。&lt;/li>
+&lt;li>&lt;strong>实现方式:&lt;/strong>
+&lt;ul>
+&lt;li>&lt;strong>JDK 动态代理:&lt;/strong> 利用 Java 的反射机制，在运行时生成实现了指定接口的代理对象。要求被代理类必须实现接口。&lt;/li>
+&lt;li>&lt;strong>CGLIB 动态代理:&lt;/strong> 通过继承目标类，生成目标类的子类来实现代理。适用于没有实现接口的类，但无法代理 &lt;code>final&lt;/code> 类和方法。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>优点:&lt;/strong> 提高了代码的灵活性和复用性，减少了代理类的数量。&lt;/li>
+&lt;li>&lt;strong>缺点:&lt;/strong> 相对于静态代理，性能开销略大，因为涉及到反射和动态生成类。&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>很多场景都是利用类似机制做到的，比如用来包装 RPC 调用、面向切面的编程（AOP）。&lt;/p>
+&lt;p>通过代理可以让调用者与实现者之间解耦。比如进行 RPC 调用，框架内部的寻址、序列化、反序列化等，对于调用者往往是没有太大意义的。&lt;/p>&lt;/blockquote>
+&lt;h2 id="jdk-动态代理">JDK 动态代理
+&lt;/h2>&lt;p>JDK 动态代理基于 Java 的&lt;a class="link" href="https://blog.yellster.top/p/java-reflection" >反射机制&lt;/a>，代理对象需要 &lt;strong>实现至少一个接口&lt;/strong>，代理类在运行时动态生成要求。&lt;/p>
+&lt;ul>
+&lt;li>代理对象由 &lt;code>Proxy.newProxyInstance()&lt;/code> 动态生成，其实现了 &lt;code>HelloService&lt;/code> 接口。&lt;/li>
+&lt;li>在 &lt;code>InvocationHandler&lt;/code> 中对方法调用进行了拦截，可在调用前后加入额外处理逻辑。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// HelloService.java&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">interface&lt;/span> &lt;span class="nc">HelloService&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">sayHello&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">name&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// HelloServiceImpl.java&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">HelloServiceImpl&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">implements&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">HelloService&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Override&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">sayHello&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">name&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Hello, &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">name&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// DynamicProxyDemo.java&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">java.lang.reflect.InvocationHandler&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">java.lang.reflect.Method&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">java.lang.reflect.Proxy&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">DynamicProxyDemo&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 创建原始对象&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">HelloService&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">original&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">HelloServiceImpl&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 利用 Proxy.newProxyInstance 创建代理对象&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">HelloService&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">proxyInstance&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">HelloService&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Proxy&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newProxyInstance&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">original&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getClass&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">getClassLoader&lt;/span>&lt;span class="p">(),&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="n">HelloService&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">},&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">InvocationHandler&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Override&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">invoke&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">proxy&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Method&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">throws&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Throwable&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Before method: &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getName&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">invoke&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">original&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;After method: &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getName&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 调用代理对象的方法&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">proxyInstance&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">sayHello&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;World&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="cglib-动态代理">CGLIB 动态代理
+&lt;/h2>&lt;p>当目标类没有实现接口时，可以使用 &lt;code>CGLIB&lt;/code> 动态代理，基于 ASM 字节码操作框架，通过继承目标类生成代理类。 &lt;em>&lt;strong>需要添加 CGLIB 的依赖&lt;/strong>&lt;/em>。&lt;/p>
+&lt;p>因为是子类化，我们可以达到近似使用被调用者本身的效果。在 Spring 编程中，框架通常会处理这种情况。&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>Enhancer&lt;/code> 用于生成目标类（这里是 Person 类）的子类。&lt;/li>
+&lt;li>在 &lt;code>MethodInterceptor&lt;/code> 的 &lt;code>intercept&lt;/code> 方法中可以对方法调用进行拦截，添加前置或后置逻辑。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-xml" data-lang="xml">&lt;span class="line">&lt;span class="cl">&lt;span class="c">&amp;lt;!-- pom.xml --&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;dependency&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;groupId&amp;gt;&lt;/span>cglib&lt;span class="nt">&amp;lt;/groupId&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;artifactId&amp;gt;&lt;/span>cglib&lt;span class="nt">&amp;lt;/artifactId&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;version&amp;gt;&lt;/span>3.3.0&lt;span class="nt">&amp;lt;/version&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;/dependency&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// CGLIBProxyDemo.java&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">net.sf.cglib.proxy.Enhancer&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">net.sf.cglib.proxy.MethodInterceptor&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">net.sf.cglib.proxy.MethodProxy&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">java.lang.reflect.Method&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">CGLIBProxyDemo&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">Person&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">sayHello&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">name&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Hello, &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">name&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Enhancer&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">enhancer&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Enhancer&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 指定需要代理的目标类&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">enhancer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">setSuperclass&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Person&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 设置方法拦截器&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">enhancer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">setCallback&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">MethodInterceptor&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Override&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">intercept&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">obj&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Method&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">MethodProxy&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">proxy&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">throws&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Throwable&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Before method: &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getName&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">proxy&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">invokeSuper&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">obj&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;After method: &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getName&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">});&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 创建代理对象&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Person&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">proxy&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Person&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">enhancer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">create&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">proxy&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">sayHello&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;World&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="cglib-注意事项">CGLIB 注意事项
+&lt;/h3>&lt;p>自 &lt;strong>JDK 9&lt;/strong> 引入 &lt;strong>模块化系统（JPMS）&lt;/strong> 以来，对 CGLIB 的使用受到了一定限制。&lt;/p>
+&lt;p>​CGLIB 通过生成目标类的子类来实现代理，这需要在运行时访问目标类的构造方法和方法。&lt;/p>
+&lt;p>&lt;strong>​然而，JDK 9 的模块系统对&lt;a class="link" href="https://blog.yellster.top/p/java-reflection" >反射&lt;/a>访问进行了严格控制，默认情况下，模块之间的访问是受限的&lt;/strong>。因此，CGLIB 在尝试通过&lt;a class="link" href="https://blog.yellster.top/p/java-reflection" >反射&lt;/a>访问 &lt;code>ClassLoader.defineClass&lt;/code> 时会抛出 &lt;code>InaccessibleObjectException&lt;/code>。&lt;/p>
+&lt;p>&lt;strong>解决办法:&lt;/strong> 可以在启动应用时添加 JVM 参数，显式打开需要的模块包，以允许 CGLIB 进行&lt;a class="link" href="https://blog.yellster.top/p/java-reflection" >反射&lt;/a>访问。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">--add-opens java.base/java.lang&lt;span class="o">=&lt;/span>ALL-UNNAMED
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>该参数的作用是将 java.base 模块中的 java.lang 包对所有未命名模块（即没有显式声明模块的代码）开放，从而允许&lt;a class="link" href="https://blog.yellster.top/p/java-reflection" >反射&lt;/a>访问。&lt;/p>
+&lt;h2 id="jdk-动态代理-vs-cglib-动态代理">JDK 动态代理 VS CGLIB 动态代理
+&lt;/h2>&lt;p>JDK 动态代理&lt;/p>
+&lt;ul>
+&lt;li>优点
+&lt;ul>
+&lt;li>&lt;strong>简洁易用&lt;/strong>：利用 Java 内置的&lt;a class="link" href="https://blog.yellster.top/p/java-reflection" >反射&lt;/a>机制，无需引入第三方依赖&lt;/li>
+&lt;li>&lt;strong>接口驱动&lt;/strong>：代理类必须实现接口，符合面向接口编程的设计原则&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>缺点
+&lt;ul>
+&lt;li>&lt;strong>只能代理接口&lt;/strong>：无法对没有实现接口的类进行代理&lt;/li>
+&lt;li>&lt;strong>性能开销&lt;/strong>：通过&lt;a class="link" href="https://blog.yellster.top/p/java-reflection" >反射&lt;/a>实现，性能较低&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>CGLIB 动态代理&lt;/p>
+&lt;ul>
+&lt;li>优点
+&lt;ul>
+&lt;li>&lt;strong>无需接口&lt;/strong>：可以代理没有实现接口的类&lt;/li>
+&lt;li>&lt;strong>性能较高&lt;/strong>：生成的代理类方法调用性能优于 JDK动态代理&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>缺点
+&lt;ul>
+&lt;li>&lt;strong>类限制&lt;/strong>：无法代理被 &lt;code>final&lt;/code> 修饰的类和方法，因为 CGLIB 通过继承实现代理&lt;/li>
+&lt;li>&lt;strong>引入依赖&lt;/strong>：需要引入 CGLIB 的依赖&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>在实际应用中，框架如 Spring 会根据目标对象的情况，选择使用 JDK 动态代理或 CGLIB 动态代理，以实现 AOP 功能。​&lt;/p>&lt;/blockquote>
+&lt;h2 id="与装饰器模式的区别">与装饰器模式的区别？
+&lt;/h2>&lt;p>代理模式和装饰器模式在结构上可能相似，但它们在&lt;strong>目的&lt;/strong>、&lt;strong>关注点&lt;/strong>和&lt;strong>使用方式&lt;/strong>上有显著区别。&lt;/p>
+&lt;p>&lt;strong>1. 目的:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>代理模式（Proxy Pattern）:&lt;/strong> 主要目的是控制对目标对象的访问。代理对象通常用于在客户端和真实对象之间提供一个中介，控制对真实对象的访问权限或添加额外的操作，例如延迟加载、安全检查或远程调用等。&lt;/li>
+&lt;li>&lt;strong>装饰器模式（Decorator Pattern）:&lt;/strong> 主要目的是动态地增强对象的功能。通过将原始对象包装在装饰器中，可以在不修改原始类的情况下，添加新的行为或功能。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>2. 关注点:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>代理模式:&lt;/strong> 关注于对对象访问的控制和管理，强调如何代理和控制对真实对象的操作。&lt;/li>
+&lt;li>&lt;strong>装饰器模式:&lt;/strong> 关注于对对象功能的扩展和增强，强调如何在运行时添加新的功能或行为。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>3. 使用方式:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>代理模式:&lt;/strong> 代理类通常在编译时就确定，与真实对象实现相同的接口，并持有对真实对象的引用。在客户端通过代理对象访问真实对象，代理对象可以在调用真实对象的方法前后添加额外的操作。&lt;/li>
+&lt;li>&lt;strong>装饰器模式:&lt;/strong> 装饰器类也实现与被装饰对象相同的接口，但通常在运行时动态创建，并将被装饰对象作为构造参数传入。装饰器对象通过组合的方式，将增强功能添加到被装饰对象上。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>示例:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>代理模式:&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">interface&lt;/span> &lt;span class="nc">Subject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">request&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">RealSubject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">implements&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Subject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">request&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;RealSubject request&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">ProxySubject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">implements&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Subject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">private&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">RealSubject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">realSubject&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">ProxySubject&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">this&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">realSubject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">RealSubject&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">request&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 代理操作，例如访问控制&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;ProxySubject request&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">realSubject&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">request&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>&lt;strong>装饰器模式:&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">interface&lt;/span> &lt;span class="nc">Subject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">request&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">RealSubject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">implements&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Subject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">request&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;RealSubject request&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">DecoratorSubject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">implements&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Subject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">private&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Subject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">subject&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">DecoratorSubject&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Subject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">subject&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">this&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">subject&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">subject&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">request&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 装饰操作，例如功能增强&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;DecoratorSubject request&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">subject&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">request&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>总结而言，代理模式侧重于控制对对象的访问，而装饰器模式侧重于增强对象的功能。代理对象通常用于控制对真实对象的访问权限，而装饰器对象用于在运行时动态地添加新的功能或行为。&lt;/p></description></item><item><title>反射？</title><link>https://blog.yellster.top/p/java-reflection/</link><pubDate>Tue, 26 Mar 2024 17:24:03 +0800</pubDate><author>xyp_selune@163.com (Yellster)</author><guid>https://blog.yellster.top/p/java-reflection/</guid><description>&lt;p>&lt;strong>反射（Reflection）&lt;/strong> 是&lt;code>Java&lt;/code>语言的一个特性，它允许程序在 &lt;strong>运行时(runtime)&lt;/strong> 动态分析、检查和修改类、对象、方法、字段等的能力。它突破了传统代码的静态限制，允许程序在运行期间 &lt;strong>自省（introspect）&lt;/strong> 和 &lt;strong>动态操作&lt;/strong>。&lt;/p>
+&lt;p>&lt;strong>核心思想&lt;/strong>: 将类的结构（方法、字段、构造函数等）映射为Java对象，通过API直接操作。&lt;/p>
+&lt;p>&lt;strong>类对象是何时产生的？&lt;/strong>: 在类加载时产生的。在Java程序启动时，JVM会加载所需的类，并为每个类创建一个Class对象，这个对象包含了该类的所有结构信息，可以通过反射机制获取。&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>反射机制&lt;/strong> 是Java被视为&lt;code>动态语言&lt;/code>的关键特性之一。&lt;/p>
+&lt;p>&lt;strong>自省（Introspection）&lt;/strong> 指的是程序在运行时检查自身类型信息的能力&lt;/p>&lt;/blockquote>
+&lt;p>&lt;img src="https://blog.yellster.top/p/java-reflection/%E5%8F%8D%E5%B0%84%E6%B5%81%E7%A8%8B%E5%9B%BE.png"
+width="1488"
+height="790"
+srcset="https://blog.yellster.top/p/java-reflection/%E5%8F%8D%E5%B0%84%E6%B5%81%E7%A8%8B%E5%9B%BE_hu_2b173f7bca4db030.png 480w, https://blog.yellster.top/p/java-reflection/%E5%8F%8D%E5%B0%84%E6%B5%81%E7%A8%8B%E5%9B%BE_hu_6cabec9b3d6de7e.png 1024w"
+loading="lazy"
+alt="反射流程图"
+class="gallery-image"
+data-flex-grow="188"
+data-flex-basis="452px"
+>&lt;/p>
+&lt;h2 id="核心原理">核心原理
+&lt;/h2>&lt;p>Java反射的核心原理基于JVM的类加载机制和Java的类型系统:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>类加载机制&lt;/strong>: 当Java程序运行时，JVM会加载所需的类，并为每个类创建一个Class对象，这个对象包含了该类的所有结构信息。&lt;/li>
+&lt;li>&lt;strong>Class对象&lt;/strong>: 每个类在JVM中都有且只有一个对应的Class对象，这个对象是反射的入口点。&lt;/li>
+&lt;li>&lt;strong>运行时类型信息(RTTI)&lt;/strong>: Java在运行时保留了对象的类型信息，这使得反射成为可能。&lt;/li>
+&lt;/ul>
+&lt;h2 id="核心api">核心API
+&lt;/h2>&lt;p>Java反射的核心类位于 &lt;code>java.lang.reflect&lt;/code> 包中，关键API包括:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>类/接口&lt;/th>
+&lt;th>作用&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>java.lang.Class&lt;/code>&lt;/td>
+&lt;td>表示一个类或接口的特性，如名称、字段、方法等&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>java.lang.reflect.Field&lt;/code>&lt;/td>
+&lt;td>提供了类或接口的单个字段的信息和动态访问&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>java.lang.reflect.Method&lt;/code>&lt;/td>
+&lt;td>提供了类或接口上单个方法的信息和访问权限&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>java.lang.reflect.Constructor&lt;/code>&lt;/td>
+&lt;td>提供了类的单个构造函数的信息和访问权限&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>java.lang.reflect.Array&lt;/code>&lt;/td>
+&lt;td>提供了动态创建和访问 Java 数组的静态方法&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>java.lang.reflect.Modifier&lt;/code>&lt;/td>
+&lt;td>提供了静态方法和常量，用于解码类和成员访问修改器&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="典型场景">典型场景
+&lt;/h2>&lt;ol>
+&lt;li>&lt;strong>框架开发&lt;/strong>
+&lt;ul>
+&lt;li>Spring的依赖注入（IoC）、MyBatis的ORM映射。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>动态代理&lt;/strong>
+&lt;ul>
+&lt;li>结合&lt;code>InvocationHandler&lt;/code>实现AOP（如日志、事务）。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>序列化与反序列化&lt;/strong>
+&lt;ul>
+&lt;li>如Jackson/GSON通过反射读取字段生成JSON。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>IDE和调试工具&lt;/strong>
+&lt;ul>
+&lt;li>代码自动提示、对象属性查看。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>测试框架&lt;/strong>
+&lt;ul>
+&lt;li>JUnit通过反射调用测试方法。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="核心操作步骤">核心操作步骤
+&lt;/h2>&lt;h3 id="获取类的class对象">获取类的&lt;code>Class&lt;/code>对象
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 方式1: 通过类名.class&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 方式2: 通过对象.getClass()&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">str&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;Hello&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">str&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getClass&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 方式3: 通过Class.forName()（最常用）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">forName&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;java.lang.String&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 方式4: 调用类的加载器&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">ClassLoader&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">cl&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">this&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getClass&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">getClassLoader&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">cl&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">loadClass&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;java.lang.String&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="操作构造函数-动态创建对象">操作构造函数: 动态创建对象
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 获取无参构造器并创建对象&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Constructor&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">constructor&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getConstructor&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">instance&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">constructor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newInstance&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 获取有参构造器（例如: String的byte[]构造器）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Constructor&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">constructor&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getConstructor&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">byte&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">instance&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">constructor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newInstance&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">byte&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="n">65&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">66&lt;/span>&lt;span class="p">});&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="getxxx-和-getdeclaredxxx-的区别">getXXX() 和 getDeclaredXXX() 的区别
+&lt;/h4>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>方法&lt;/th>
+&lt;th>访问范围&lt;/th>
+&lt;th>是否包含私有成员&lt;/th>
+&lt;th>是否包含继承成员&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;strong>&lt;code>getXXX()&lt;/code>&lt;/strong>&lt;/td>
+&lt;td>仅返回 &lt;strong>public&lt;/strong> 成员&lt;/td>
+&lt;td>❌ 不包含&lt;/td>
+&lt;td>✅ 包含父类的 &lt;code>public&lt;/code> 成员&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>&lt;code>getDeclaredXXX()&lt;/code>&lt;/strong>&lt;/td>
+&lt;td>返回 &lt;strong>所有权限&lt;/strong> 的成员（public/protected/private/default）&lt;/td>
+&lt;td>✅ 包含&lt;/td>
+&lt;td>❌ 仅限当前类&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h4 id="getxxx-和-getdeclaredxxx-的使用场景对比">getXXX() 和 getDeclaredXXX() 的使用场景对比
+&lt;/h4>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;strong>场景&lt;/strong>&lt;/th>
+&lt;th>&lt;strong>推荐方法&lt;/strong>&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>获取公共 API（如框架调用）&lt;/td>
+&lt;td>&lt;code>getXXX()&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>访问私有成员（如测试、破解单例）&lt;/td>
+&lt;td>&lt;code>getDeclaredXXX()&lt;/code> + &lt;code>setAccessible(true)&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>需要继承的成员&lt;/td>
+&lt;td>&lt;code>getXXX()&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>仅操作当前类成员&lt;/td>
+&lt;td>&lt;code>getDeclaredXXX()&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h4 id="注意事项">注意事项
+&lt;/h4>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>继承关系&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>getXXX()&lt;/code> 会查找父类的 &lt;code>public&lt;/code> 成员。&lt;/li>
+&lt;li>&lt;code>getDeclaredXXX()&lt;/code> 仅限当前类，不检查父类。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>访问私有成员&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>通过 &lt;code>getDeclaredXXX()&lt;/code> 获取私有成员后，需调用 &lt;code>setAccessible(true)&lt;/code> 解除访问限制。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>性能影响&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>反射操作比直接调用慢，必要时可缓存 &lt;code>Method&lt;/code>/&lt;code>Field&lt;/code> 对象。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>模块化系统（Java 9+）&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>如果类在模块中，需在 &lt;code>module-info.java&lt;/code> 中开放权限（&lt;code>opens&lt;/code>）才能反射访问非 &lt;code>public&lt;/code> 成员。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://blog.yellster.top/p/java-reflection/java.lang.reflect.Member.png"
+width="1476"
+height="820"
+srcset="https://blog.yellster.top/p/java-reflection/java.lang.reflect.Member_hu_d810bcc6b7d95a72.png 480w, https://blog.yellster.top/p/java-reflection/java.lang.reflect.Member_hu_8228d7ae83c859c3.png 1024w"
+loading="lazy"
+alt="java.lang.reflect.Member"
+class="gallery-image"
+data-flex-grow="180"
+data-flex-basis="432px"
+>&lt;/p>
+&lt;h3 id="操作方法-动态调用">操作方法: 动态调用
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 获取方法（例如: String的substring方法）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Method&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getMethod&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;substring&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 调用方法（对某个实例执行）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">method&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">invoke&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Reflection&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">2&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">5&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// 输出 &amp;#34;fle&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="methodinvoke-的返回值规则">&lt;code>Method.invoke()&lt;/code> 的返回值规则
+&lt;/h4>&lt;p>&lt;code>result&lt;/code> 的可能情况：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>被调用方法的返回类型&lt;/th>
+&lt;th>&lt;code>invoke()&lt;/code> 返回的 &lt;code>result&lt;/code> 类型&lt;/th>
+&lt;th>示例&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;strong>有返回值的方法&lt;/strong>&lt;/td>
+&lt;td>返回 &lt;code>Object&lt;/code>（实际为方法返回值）&lt;/td>
+&lt;td>&lt;code>String.substring()&lt;/code> → &lt;code>String&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>返回 &lt;code>void&lt;/code> 的方法&lt;/strong>&lt;/td>
+&lt;td>返回 &lt;code>null&lt;/code>&lt;/td>
+&lt;td>&lt;code>List.clear()&lt;/code> → &lt;code>null&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>基本类型（如 &lt;code>int&lt;/code>）&lt;/strong>&lt;/td>
+&lt;td>自动装箱为包装类（如 &lt;code>Integer&lt;/code>）&lt;/td>
+&lt;td>&lt;code>String.length()&lt;/code> → &lt;code>Integer&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>静态方法&lt;/strong>&lt;/td>
+&lt;td>正常返回（&lt;code>obj&lt;/code> 参数传 &lt;code>null&lt;/code>）&lt;/td>
+&lt;td>&lt;code>Math.max()&lt;/code> → &lt;code>Integer&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;strong>方法抛出异常&lt;/strong>&lt;/td>
+&lt;td>封装成 &lt;code>InvocationTargetException&lt;/code>&lt;/td>
+&lt;td>-&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h4 id="为什么返回-object-而不是具体类型">为什么返回 &lt;code>Object&lt;/code> 而不是具体类型？
+&lt;/h4>&lt;ul>
+&lt;li>&lt;strong>反射的通用性&lt;/strong>：&lt;code>Method.invoke()&lt;/code> 需要适配任意方法签名，&lt;code>Object&lt;/code> 是所有类型的超类。&lt;/li>
+&lt;li>&lt;strong>类型安全&lt;/strong>：由开发者自行处理强制转型（编译器无法检查反射调用的返回类型）。&lt;/li>
+&lt;/ul>
+&lt;h3 id="操作字段-动态读写属性">操作字段: 动态读写属性
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 获取字段（例如: Integer的MAX_VALUE）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Field&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Integer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getDeclaredField&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;MAX_VALUE&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 读取字段值（静态字段可传null）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">max&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kc">null&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// 输出2147483647&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 修改字段值（需注意final字段可能抛出异常）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">setAccessible&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// 突破private限制（慎用！）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">field&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">set&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">100&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// 危险操作！可能破坏程序逻辑。&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="优缺点">优缺点
+&lt;/h2>&lt;h3 id="优点">优点
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>动态性&lt;/strong>: 允许在运行时动态地获取和操作类的信息，而不需要在编译时知道类的具体细节&lt;/li>
+&lt;li>&lt;strong>灵活性&lt;/strong>: 可以通过类名字符串来创建对象实例，可以在运行时动态调用方法和字段，以及访问和修改私有成员&lt;/li>
+&lt;li>&lt;strong>扩展性&lt;/strong>: 可以用于实现一些高级功能，如动态代理、注解处理、依赖注入等&lt;/li>
+&lt;/ul>
+&lt;h3 id="缺点">缺点
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>性能开销&lt;/strong>: 反射操作通常比直接调用慢，因为它需要在运行时获取和操作类的信息，需要额外的处理开销&lt;/li>
+&lt;li>&lt;strong>安全问题&lt;/strong>: 反射可以访问和修改私有成员，这可能导致安全隐患和程序逻辑错误&lt;/li>
+&lt;li>&lt;strong>复杂性&lt;/strong>: 使用反射可能会使代码变得复杂和难以理解，增加了维护成本&lt;/li>
+&lt;/ul>
+&lt;h2 id="为什么会慢">为什么会慢？
+&lt;/h2>&lt;ol>
+&lt;li>&lt;strong>动态类型解析&lt;/strong>: 反射需要在运行时解析类和方法的信息，这使得编译器无法对这些代码进行优化。相比之下，直接调用方法或构造函数可以在编译时进行静态绑定和优化。&lt;/li>
+&lt;li>&lt;strong>方法查找和验证&lt;/strong>: 通过反射调用方法时，Java 需要查找方法并进行可见性检查，这增加了额外的开销。&lt;/li>
+&lt;li>&lt;strong>安全性检查&lt;/strong>: 反射允许访问和修改私有字段和方法，JVM 为了保证安全性，需要在反射操作时进行额外的检查，增加了性能开销。&lt;/li>
+&lt;li>&lt;strong>JIT 编译优化限制&lt;/strong>: 由于反射操作的动态性，JIT 编译器无法对其进行内联等优化，导致性能低于直接调用。&lt;/li>
+&lt;/ol></description></item></channel></rss>
