@@ -9,7 +9,7 @@ hidden: false
 comments: false
 draft: false
 tags: ["思维方式", "第一性原理", "Rust", "所有权", "随记", "设计原则"]
-categories: ["思维方式", "Rust", "随记", "设计原则"]
+categories: ["思维方式", "随记", "设计原则"]
 # weight: 1 # You can add weight to some posts to override the default sorting (date descending)
 ---
 ## 什么是第一性原理？
